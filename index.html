@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="description"
+    content="Sladká fazuľka - domáce torty, sladké boxy, cupcakes a dezerty na objednávku. Nezáväzný dopyt a galéria prác."
+  />
+  <meta property="og:title" content="Sladká fazuľka - domáce torty a sladké dobroty" />
+  <meta
+    property="og:description"
+    content="Moderné portfólio a objednávkový systém pre domácu cukrárku. Torty na mieru, mini dezerty a sladké boxy."
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="sk_SK" />
+  <meta name="theme-color" content="#442e28" />
+  <title>Sladká fazuľka | Domáce torty a sladké dobroty</title>
+  <script>
+    (function (locationRef) {
+      if (locationRef.search[1] === '/') {
+        var decoded = locationRef.search
+          .slice(1)
+          .split('&')
+          .map(function (value) {
+            return value.replace(/~and~/g, '&');
+          })
+          .join('?');
+
+        window.history.replaceState(null, null, locationRef.pathname.slice(0, -1) + decoded + locationRef.hash);
+      }
+    })(window.location);
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
