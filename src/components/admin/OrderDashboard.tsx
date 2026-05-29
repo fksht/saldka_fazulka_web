@@ -67,7 +67,8 @@ const OrderDashboard = () => {
       ) : (
         <div className="grid gap-4">
           {orders.map((order) => {
-            const pricing = getOrderPricingSummary(order.items);
+            const items = order.items ?? [];
+            const pricing = getOrderPricingSummary(items);
 
             return (
               <article key={order.id} className="rounded-lg border border-cream-300 bg-white p-5 shadow-sm sm:p-6">
@@ -129,7 +130,7 @@ const OrderDashboard = () => {
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-cocoa-400">Položky</p>
                   <div className="mt-2 space-y-1 text-sm text-cocoa-700">
-                    {order.items.map((item) => (
+                    {items.map((item) => (
                       <p key={item.productId}>
                         {item.quantity}x {item.productName}
                         {item.variant && (
@@ -152,7 +153,7 @@ const OrderDashboard = () => {
                 </div>
               )}
 
-              {order.items
+              {items
                 .filter((item) => item.tastingDetails)
                 .map((item) => (
                   <div key={`tast-${item.productId}`} className="mt-5 rounded-lg bg-rose-50/50 p-4 text-sm leading-6 text-cocoa-700">
@@ -176,7 +177,7 @@ const OrderDashboard = () => {
                   </div>
                 ))}
 
-              {order.items
+              {items
                 .filter((item) => item.cakeConfiguration?.inspirationImage || item.cakeConfiguration?.inspirationUrl)
                 .map((item) => (
                   <div key={`insp-${item.productId}`} className="mt-5 rounded-lg bg-cream-50 p-4 text-sm leading-6 text-cocoa-600">

@@ -12,11 +12,14 @@ export const isCustomPriceType = (priceType: PriceType) =>
 
 export const getLineTotal = (item: OrderItem) => (item.unitPrice === null ? 0 : item.unitPrice * item.quantity);
 
-export const getOrderPricingSummary = (items: OrderItem[]): OrderPricingSummary => ({
-  estimatedTotal: items.reduce((sum, item) => sum + getLineTotal(item), 0),
-  hasCustomPricing: items.some((item) => isCustomPriceType(item.priceType)),
-  itemCount: items.length,
-});
+export const getOrderPricingSummary = (items: OrderItem[] | undefined | null): OrderPricingSummary => {
+  const list = items ?? [];
+  return {
+    estimatedTotal: list.reduce((sum, item) => sum + getLineTotal(item), 0),
+    hasCustomPricing: list.some((item) => isCustomPriceType(item.priceType)),
+    itemCount: list.length,
+  };
+};
 
 export const formatOrderItemUnitPrice = (item: OrderItem) => {
   if (item.unitPrice === null) return item.priceType === 'individual' ? 'individuálne' : 'Cena bude potvrdená po dohode';
