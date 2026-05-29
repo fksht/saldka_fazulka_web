@@ -34,6 +34,12 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          # Frontend-only admin password for the client preview. NOTE: this value
+          # is bundled into the public JavaScript and is extractable in the browser
+          # — it is demo-grade gating, not real security. Set it in GitHub repo
+          # Settings → Secrets and variables → Actions → New repository secret.
+          VITE_ADMIN_PASSWORD: ${{ secrets.VITE_ADMIN_PASSWORD }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
