@@ -3,6 +3,7 @@ import { ImagePlus, Plus, Save, Trash2, X } from 'lucide-react';
 import { CATEGORIES } from '../../services/mockData';
 import { PriceType, Product, ProductFormValues } from '../../types';
 import { slugify } from '../../services/dataService';
+import { uploadImage } from '../../services/storage';
 import { ALLERGENS } from '../../data/sladkaFazulkaCatalog';
 import { Button } from '../ui/Button';
 
@@ -49,6 +50,7 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
   const [tagsInput, setTagsInput] = useState(product?.tags.join(', ') ?? '');
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const variants = values.variants ?? [];
 
@@ -90,15 +92,21 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
     });
   };
 
-  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      updateField('imageUrl', String(reader.result));
-    };
-    reader.readAsDataURL(file);
+    setIsUploading(true);
+    setFormError(null);
+    try {
+      const url = await uploadImage(file, 'products');
+      updateField('imageUrl', url);
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'Nahranie obrázka zlyhalo.');
+    } finally {
+      setIsUploading(false);
+      event.target.value = '';
+    }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -169,7 +177,8 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
           </div>
           <label className="mt-4 block">
             <span className="mb-1 block text-sm font-semibold text-cocoa-700">Nahrať obrázok</span>
-            <input type="file" accept="image/*" onChange={handleImageUpload} className="block w-full text-sm text-cocoa-600 file:mr-4 file:rounded-full file:border-0 file:bg-cocoa-800 file:px-4 file:py-2 file:font-semibold file:text-white hover:file:bg-cocoa-900" />
+            <input type="file" accept="image/*" disabled={isUploading} onChange={handleImageUpload} className="block w-full text-sm text-cocoa-600 file:mr-4 file:rounded-full file:border-0 file:bg-cocoa-800 file:px-4 file:py-2 file:font-semibold file:text-white hover:file:bg-cocoa-900 disabled:opacity-50" />
+            {isUploading && <span className="mt-1 block text-xs font-semibold text-cocoa-500">Nahrávam obrázok…</span>}
           </label>
           <label className="mt-4 block">
             <span className="mb-1 block text-sm font-semibold text-cocoa-700">Alebo URL obrázka</span>

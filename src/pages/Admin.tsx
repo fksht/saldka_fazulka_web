@@ -1,11 +1,25 @@
-import { FormEvent, useState } from 'react';
-import { AlertTriangle, ExternalLink, Images, LayoutDashboard, Lock, LogOut, PackageCheck, ShoppingBag } from 'lucide-react';
+import { FormEvent, useEffect, useState } from 'react';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ExternalLink,
+  Images,
+  LayoutDashboard,
+  Loader2,
+  Lock,
+  LogOut,
+  PackageCheck,
+  ShoppingBag,
+  UploadCloud,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import GalleryManager from '../components/admin/GalleryManager';
 import OrderDashboard from '../components/admin/OrderDashboard';
 import PackageManager from '../components/admin/PackageManager';
 import ProductManager from '../components/admin/ProductManager';
 import { SECTION_IMAGES } from '../data/sladkaFazulkaCatalog';
+import { dataService, isSupabaseBackend } from '../services/dataService';
+import { supabase } from '../services/supabaseClient';
 
 type AdminTab = 'orders' | 'products' | 'packages' | 'gallery';
 
@@ -20,34 +34,114 @@ const adminPassword = ((import.meta.env.VITE_ADMIN_PASSWORD as string | undefine
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('orders');
+
+  // --- Authentication ---
   const [isLoggedIn, setIsLoggedIn] = useState(
-    () => Boolean(adminPassword) && window.sessionStorage.getItem('sladka-fazulka.admin') === 'true',
+    () =>
+      !isSupabaseBackend &&
+      Boolean(adminPassword) &&
+      window.sessionStorage.getItem('sladka-fazulka.admin') === 'true',
   );
+  // For Supabase we must first check for an existing session before showing the form.
+  const [authReady, setAuthReady] = useState(!isSupabaseBackend);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [loggingIn, setLoggingIn] = useState(false);
 
-  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (!isSupabaseBackend || !supabase) return;
+    let active = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!active) return;
+      setIsLoggedIn(Boolean(data.session));
+      setAuthReady(true);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(Boolean(session));
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setLoginError(null);
+
+    if (isSupabaseBackend && supabase) {
+      setLoggingIn(true);
+      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      setLoggingIn(false);
+      if (error) {
+        setLoginError('Prihlásenie zlyhalo. Skontrolujte email a heslo.');
+        return;
+      }
+      // onAuthStateChange flips isLoggedIn.
+      return;
+    }
+
     if (!adminPassword) {
       setLoginError('Prístup ešte nie je pripravený. Skontrolujte nastavenie hesla.');
       return;
     }
-
     if (password === adminPassword) {
       window.sessionStorage.setItem('sladka-fazulka.admin', 'true');
       setIsLoggedIn(true);
-      setLoginError(null);
       return;
     }
-
     setLoginError('Heslo nesedí. Skúste ho skontrolovať.');
   };
 
-  const handleLogout = () => {
-    window.sessionStorage.removeItem('sladka-fazulka.admin');
+  const handleLogout = async () => {
+    if (isSupabaseBackend && supabase) {
+      await supabase.auth.signOut();
+    } else {
+      window.sessionStorage.removeItem('sladka-fazulka.admin');
+    }
     setIsLoggedIn(false);
     setPassword('');
+    setEmail('');
   };
+
+  // --- First-run catalog import (Supabase only) ---
+  const [needsSeed, setNeedsSeed] = useState(false);
+  const [seeding, setSeeding] = useState(false);
+  const [seedError, setSeedError] = useState<string | null>(null);
+  const [seedDone, setSeedDone] = useState(false);
+
+  useEffect(() => {
+    if (!isLoggedIn || !isSupabaseBackend) return;
+    dataService
+      .needsSeeding()
+      .then(setNeedsSeed)
+      .catch(() => setNeedsSeed(false));
+  }, [isLoggedIn]);
+
+  const handleSeed = async () => {
+    setSeeding(true);
+    setSeedError(null);
+    try {
+      await dataService.seedCatalog();
+      setNeedsSeed(false);
+      setSeedDone(true);
+    } catch (error) {
+      setSeedError(error instanceof Error ? error.message : 'Import zlyhal.');
+    } finally {
+      setSeeding(false);
+    }
+  };
+
+  const loginDisabled = !isSupabaseBackend && !adminPassword;
+
+  if (!authReady) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-cream-50">
+        <Loader2 className="h-7 w-7 animate-spin text-rose-600" aria-hidden="true" />
+      </main>
+    );
+  }
 
   if (!isLoggedIn) {
     return (
@@ -66,19 +160,34 @@ const AdminPage = () => {
             </div>
 
             <form onSubmit={handleLogin} className="mt-7 space-y-4">
-              <label>
+              {isSupabaseBackend && (
+                <label className="block">
+                  <span className="mb-1 block text-sm font-semibold text-cocoa-700">Email</span>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    autoComplete="username"
+                    className="w-full rounded-lg border border-cream-200 bg-cream-50 px-4 py-3 text-cocoa-900 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
+                    placeholder="email@priklad.sk"
+                    autoFocus
+                  />
+                </label>
+              )}
+              <label className="block">
                 <span className="mb-1 block text-sm font-semibold text-cocoa-700">Heslo</span>
                 <input
                   type="password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  disabled={!adminPassword}
+                  disabled={loginDisabled}
+                  autoComplete="current-password"
                   className="w-full rounded-lg border border-cream-200 bg-cream-50 px-4 py-3 text-center text-cocoa-900 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
                   placeholder="••••••••"
-                  autoFocus
+                  autoFocus={!isSupabaseBackend}
                 />
               </label>
-              {!adminPassword && (
+              {loginDisabled && (
                 <p className="rounded-lg bg-amber-50 p-3 text-sm font-semibold text-amber-800">
                   Prístup ešte nie je pripravený. Skontrolujte nastavenie hesla.
                 </p>
@@ -86,9 +195,10 @@ const AdminPage = () => {
               {loginError && <p className="rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{loginError}</p>}
               <button
                 type="submit"
-                disabled={!adminPassword}
+                disabled={loginDisabled || loggingIn}
                 className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-cocoa-800 px-5 py-3 font-bold text-white transition hover:bg-cocoa-900 disabled:pointer-events-none disabled:opacity-50"
               >
+                {loggingIn && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
                 Vstúpiť
               </button>
             </form>
@@ -139,19 +249,50 @@ const AdminPage = () => {
           </div>
         </div>
 
-        <div
-          className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900"
-          role="status"
-        >
-          <AlertTriangle className="mt-0.5 h-5 w-5 flex-none text-amber-600" aria-hidden="true" />
-          <div>
-            <p className="font-bold">Skúšobný režim — zmeny sa ukladajú iba do tohto prehliadača.</p>
-            <p className="mt-1 text-amber-800">
-              Zmeny produktov, balíčkov, objednávok a galérie sú teraz viditeľné iba v tomto prehliadači.
-              Pred ostrým spustením treba zapnúť spoločné úložisko a plnohodnotné prihlasovanie.
-            </p>
+        {!isSupabaseBackend && (
+          <div
+            className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900"
+            role="status"
+          >
+            <AlertTriangle className="mt-0.5 h-5 w-5 flex-none text-amber-600" aria-hidden="true" />
+            <div>
+              <p className="font-bold">Skúšobný režim — zmeny sa ukladajú iba do tohto prehliadača.</p>
+              <p className="mt-1 text-amber-800">
+                Zmeny produktov, balíčkov, objednávok a galérie sú teraz viditeľné iba v tomto prehliadači.
+                Pred ostrým spustením treba zapnúť spoločné úložisko a plnohodnotné prihlasovanie.
+              </p>
+            </div>
           </div>
-        </div>
+        )}
+
+        {isSupabaseBackend && needsSeed && (
+          <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm leading-6 text-cocoa-800 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <UploadCloud className="mt-0.5 h-5 w-5 flex-none text-rose-600" aria-hidden="true" />
+              <div>
+                <p className="font-bold text-cocoa-900">Databáza je zatiaľ prázdna.</p>
+                <p className="mt-1">Jedným kliknutím naimportujte aktuálnu ponuku (produkty, galériu a balíčky).</p>
+                {seedError && <p className="mt-1 font-semibold text-red-700">{seedError}</p>}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleSeed}
+              disabled={seeding}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-cocoa-800 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-cocoa-900 disabled:opacity-50"
+            >
+              {seeding ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <UploadCloud className="h-4 w-4" aria-hidden="true" />}
+              Importovať aktuálnu ponuku
+            </button>
+          </div>
+        )}
+
+        {isSupabaseBackend && seedDone && (
+          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
+            <CheckCircle2 className="h-5 w-5 flex-none text-emerald-600" aria-hidden="true" />
+            Ponuka bola naimportovaná. Obnovte stránku, ak sa zoznamy hneď nezobrazia.
+          </div>
+        )}
 
         <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
           <aside>

@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { Edit2, Eye, EyeOff, ImagePlus, Loader2, Plus, Save, Trash2, X } from 'lucide-react';
 import { dataService } from '../../services/dataService';
+import { uploadImage } from '../../services/storage';
 import { GALLERY_CATEGORIES } from '../../data/sladkaFazulkaCatalog';
 import { GalleryImage, GalleryImageDraft } from '../../types';
 import { Button } from '../ui/Button';
@@ -22,6 +23,8 @@ const GalleryManager = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const fetchImages = async () => {
     setLoading(true);
@@ -34,13 +37,21 @@ const GalleryManager = () => {
     void fetchImages();
   }, []);
 
-  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => setDraft((current) => ({ ...current, imageUrl: String(reader.result) }));
-    reader.readAsDataURL(file);
+    setIsUploading(true);
+    setUploadError(null);
+    try {
+      const url = await uploadImage(file, 'gallery');
+      setDraft((current) => ({ ...current, imageUrl: url }));
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : 'Nahranie obrázka zlyhalo.');
+    } finally {
+      setIsUploading(false);
+      event.target.value = '';
+    }
   };
 
   const cancelEdit = () => {
@@ -134,9 +145,12 @@ const GalleryManager = () => {
               <input
                 type="file"
                 accept="image/*"
+                disabled={isUploading}
                 onChange={handleImageUpload}
-                className="block w-full text-sm text-cocoa-600 file:mr-4 file:rounded-full file:border-0 file:bg-cocoa-800 file:px-4 file:py-2 file:font-semibold file:text-white hover:file:bg-cocoa-900"
+                className="block w-full text-sm text-cocoa-600 file:mr-4 file:rounded-full file:border-0 file:bg-cocoa-800 file:px-4 file:py-2 file:font-semibold file:text-white hover:file:bg-cocoa-900 disabled:opacity-50"
               />
+              {isUploading && <span className="mt-1 block text-xs font-semibold text-cocoa-500">Nahrávam obrázok…</span>}
+              {uploadError && <span className="mt-1 block text-xs font-semibold text-red-600">{uploadError}</span>}
             </label>
           </div>
 

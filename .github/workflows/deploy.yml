@@ -40,6 +40,12 @@ jobs:
           # — it is demo-grade gating, not real security. Set it in GitHub repo
           # Settings → Secrets and variables → Actions → New repository secret.
           VITE_ADMIN_PASSWORD: ${{ secrets.VITE_ADMIN_PASSWORD }}
+          # Supabase backend. Safe-to-expose public values (governed by RLS).
+          # When set, the app uses the real database instead of localStorage.
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          # Optional: serverless endpoint that emails Zuzka on each order.
+          VITE_EMAIL_ENDPOINT: ${{ secrets.VITE_EMAIL_ENDPOINT }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
