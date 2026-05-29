@@ -837,7 +837,7 @@ export const ABOUT_CONTENT: AboutContent = {
 // Pred publikovaním overiť so Zuzkou; predpokladaný správny tvar uvedený nižšie.
 export const CONTACT_INFO: ContactInfo = {
   email: 'sladkafazulka@gmail.com',
-  emailNeedsReview: true,
+  emailNeedsReview: false,
   phone: '+421 911 410 544',
   location: 'Košice a okolie',
   orderNote:
