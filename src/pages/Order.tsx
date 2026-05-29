@@ -17,7 +17,14 @@ const OrderPage = () => {
 
   const handleOrderSubmit = async (draft: OrderDraft) => {
     const order = await dataService.createOrder(draft);
-    await emailService.sendOrderEmails(order);
+    // The reliable notification is sent server-side by a Supabase webhook when
+    // the order row is inserted. This frontend call is a best-effort fallback
+    // (used only if VITE_EMAIL_ENDPOINT is set) and must never block the order.
+    try {
+      await emailService.sendOrderEmails(order);
+    } catch (error) {
+      console.warn('Email notification skipped (handled server-side):', error);
+    }
     setOrderId(order.id);
     clearCart();
     setStep('success');
