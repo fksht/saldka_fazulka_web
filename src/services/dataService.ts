@@ -1,4 +1,6 @@
 import {
+  CandyBarPackage,
+  CandyBarPackageFormValues,
   GalleryImage,
   GalleryImageDraft,
   Order,
@@ -7,11 +9,13 @@ import {
   Product,
   ProductFormValues,
 } from '../types';
-import { MOCK_GALLERY, MOCK_PRODUCTS } from './mockData';
+import { MOCK_CANDY_BAR_PACKAGES, MOCK_GALLERY, MOCK_PRODUCTS } from './mockData';
+import { getOrderPricingSummary } from '../utils/orderPricing';
 
 const PRODUCT_STORAGE_KEY = 'sladka-fazulka.products.v1';
 const ORDER_STORAGE_KEY = 'sladka-fazulka.orders.v1';
 const GALLERY_STORAGE_KEY = 'sladka-fazulka.gallery.v1';
+const CANDY_BAR_PACKAGE_STORAGE_KEY = 'sladka-fazulka.candy-bar-packages.v1';
 
 const wait = (ms = 180) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
@@ -54,6 +58,10 @@ class DataService {
   private productRepository = new LocalStorageRepository<Product>(PRODUCT_STORAGE_KEY, MOCK_PRODUCTS);
   private orderRepository = new LocalStorageRepository<Order>(ORDER_STORAGE_KEY, []);
   private galleryRepository = new LocalStorageRepository<GalleryImage>(GALLERY_STORAGE_KEY, MOCK_GALLERY);
+  private candyBarPackageRepository = new LocalStorageRepository<CandyBarPackage>(
+    CANDY_BAR_PACKAGE_STORAGE_KEY,
+    MOCK_CANDY_BAR_PACKAGES,
+  );
 
   async getProducts(): Promise<Product[]> {
     await wait();
@@ -111,16 +119,31 @@ class DataService {
   }
 
   async deleteProduct(id: string): Promise<void> {
-    const products = this.productRepository.read().filter((product) => product.id !== id);
+    const products = this.productRepository.read();
+    const index = products.findIndex((product) => product.id === id);
+    if (index === -1) throw new Error('Produkt sa nenašiel');
+
+    if (products[index].sourcePage) {
+      products[index] = { ...products[index], available: false, updatedAt: new Date().toISOString() };
+      this.productRepository.write(products);
+      await wait();
+      return;
+    }
+
+    products.splice(index, 1);
     this.productRepository.write(products);
     await wait();
   }
 
   async createOrder(order: OrderDraft): Promise<Order> {
+    if (order.items.length === 0) throw new Error('Objednávka neobsahuje žiadne položky');
+
     const orders = this.orderRepository.read();
     const createdAt = new Date().toISOString();
+    const pricing = getOrderPricingSummary(order.items);
     const newOrder: Order = {
       ...order,
+      estimatedTotal: pricing.estimatedTotal,
       id: `SF-${new Date().getFullYear()}-${String(orders.length + 1).padStart(4, '0')}`,
       status: 'new',
       createdAt,
@@ -145,6 +168,46 @@ class DataService {
     this.orderRepository.write(orders);
     await wait();
     return orders[index];
+  }
+
+  async getCandyBarPackages(): Promise<CandyBarPackage[]> {
+    await wait();
+    return this.candyBarPackageRepository.read();
+  }
+
+  async updateCandyBarPackage(id: string, updates: Partial<CandyBarPackageFormValues> & { hidden?: boolean }): Promise<CandyBarPackage> {
+    const packages = this.candyBarPackageRepository.read();
+    const index = packages.findIndex((pkg) => pkg.id === id);
+    if (index === -1) throw new Error('Balíček sa nenašiel');
+
+    const updatedPackage: CandyBarPackage = {
+      ...packages[index],
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+
+    packages[index] = updatedPackage;
+    this.candyBarPackageRepository.write(packages);
+    await wait();
+    return updatedPackage;
+  }
+
+  async addCandyBarPackage(values: CandyBarPackageFormValues): Promise<CandyBarPackage> {
+    const packages = this.candyBarPackageRepository.read();
+    const newPackage: CandyBarPackage = {
+      ...values,
+      id: createId('pkg'),
+      updatedAt: new Date().toISOString(),
+    };
+    this.candyBarPackageRepository.write([...packages, newPackage]);
+    await wait();
+    return newPackage;
+  }
+
+  async deleteCandyBarPackage(id: string): Promise<void> {
+    const packages = this.candyBarPackageRepository.read().filter((pkg) => pkg.id !== id);
+    this.candyBarPackageRepository.write(packages);
+    await wait();
   }
 
   async getGalleryImages(): Promise<GalleryImage[]> {

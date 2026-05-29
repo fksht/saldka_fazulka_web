@@ -9,9 +9,9 @@ export default {
       colors: {
         cream: {
           50: '#fffaf5',
-          100: '#f8efe4',
-          200: '#efddcb',
-          300: '#e3c8b2',
+          100: '#fbf3e8',
+          200: '#f3e3cf',
+          300: '#e7cdaf',
           400: '#d6b194',
         },
         cocoa: {
@@ -24,9 +24,9 @@ export default {
           950: '#1f1411',
         },
         rose: {
-          50: '#fff1f4',
+          50: '#fff4f6',
           100: '#ffe1e8',
-          200: '#ffc6d3',
+          200: '#fdc8d4',
           300: '#f8a6b9',
           400: '#eb7f9d',
           500: '#d95f84',
@@ -40,22 +40,25 @@ export default {
           600: '#5d8d6b',
           700: '#477155',
         },
-        bakery: {
-          50: '#fdf8f6',
-          100: '#f2e8e5',
-          200: '#eaddd7',
-          300: '#e0cec7',
-          400: '#d2bab0',
-          500: '#a38a80',
-          600: '#8b6f65',
-          700: '#6d554c',
-          800: '#523d36',
-          900: '#3a2b25',
+        gold: {
+          100: '#f6ead0',
+          200: '#ecd6a8',
+          300: '#dfba76',
+          400: '#cca155',
+          500: '#b88a44',
+          600: '#956d34',
+          700: '#71522a',
         },
       },
       fontFamily: {
+        display: ['"Cormorant Garamond"', '"Playfair Display"', 'Georgia', 'serif'],
         serif: ['"Playfair Display"', 'Georgia', 'serif'],
+        script: ['"Caveat"', '"Cormorant Garamond"', 'cursive'],
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+      backgroundImage: {
+        'rose-wash':
+          'radial-gradient(circle at top left, rgba(248, 166, 185, 0.32), transparent 55%), radial-gradient(circle at bottom right, rgba(248, 166, 185, 0.22), transparent 55%)',
       },
     },
   },

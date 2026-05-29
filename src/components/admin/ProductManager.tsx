@@ -45,7 +45,10 @@ const ProductManager = () => {
   };
 
   const deleteProduct = async (product: Product) => {
-    if (!window.confirm(`Naozaj chcete zmazať produkt "${product.name}"?`)) return;
+    const message = product.sourcePage
+      ? `Produkt "${product.name}" je zo základnej ponuky. Namiesto zmazania sa skryje z webu. Pokračovať?`
+      : `Naozaj chcete zmazať produkt "${product.name}"?`;
+    if (!window.confirm(message)) return;
     await dataService.deleteProduct(product.id);
     await fetchProducts();
   };
@@ -122,7 +125,7 @@ const ProductManager = () => {
                       </div>
                     </td>
                     <td className="px-5 py-4 text-sm font-medium text-cocoa-600">{product.category}</td>
-                    <td className="px-5 py-4 text-sm font-bold text-cocoa-900">{formatPrice(product.price, product.priceType)}</td>
+                    <td className="px-5 py-4 text-sm font-bold text-cocoa-900">{formatPrice(product.price, product.priceType, product.unitLabel)}</td>
                     <td className="px-5 py-4">
                       <button
                         type="button"
@@ -160,7 +163,7 @@ const ProductManager = () => {
                           type="button"
                           className="rounded-full p-2 text-cocoa-500 transition hover:bg-red-50 hover:text-red-700"
                           onClick={() => deleteProduct(product)}
-                          title="Zmazať"
+                          title={product.sourcePage ? 'Skryť z ponuky' : 'Zmazať'}
                         >
                           <Trash2 className="h-4 w-4" aria-hidden="true" />
                         </button>

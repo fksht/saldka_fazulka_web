@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700;800&family=Caveat:wght@500;700&family=Playfair+Display:ital,wght@0,600;0,700;1,700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -15,5 +15,36 @@
 
   ::selection {
     @apply bg-rose-200 text-cocoa-950;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-feature-settings: 'liga' 1, 'dlig' 1;
+  }
+}
+
+@layer components {
+  .gold-divider {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: theme('colors.gold.500');
+    font-family: theme('fontFamily.script');
+    font-size: 1.25rem;
+    letter-spacing: 0.04em;
+  }
+
+  .gold-divider::before,
+  .gold-divider::after {
+    content: '';
+    height: 1px;
+    width: 3rem;
+    background: linear-gradient(90deg, transparent, theme('colors.gold.400'), transparent);
+  }
+
+  .watercolor-wash {
+    background-image: theme('backgroundImage.rose-wash');
   }
 }

@@ -7,3 +7,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Source PDF price list — kept locally as content source of truth.
+# Do not commit (it is ~165 MB and exceeds GitHub's file size limits).
+*.pdf

@@ -4,11 +4,15 @@ import Navbar from './components/layout/Navbar';
 import { CartProvider } from './context/CartContext';
 import About from './pages/About';
 import AdminPage from './pages/Admin';
+import Cake from './pages/Cake';
+import CandyBar from './pages/CandyBar';
 import Contact from './pages/Contact';
 import Gallery from './pages/Gallery';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
+import Ochutnavka from './pages/Ochutnavka';
 import OrderPage from './pages/Order';
+import Vysluzky from './pages/Vysluzky';
 
 const PublicLayout = () => (
   <>
@@ -17,6 +21,10 @@ const PublicLayout = () => (
       <Route path="/" element={<Home />} />
       <Route path="/o-mne" element={<About />} />
       <Route path="/ponuka" element={<Menu />} />
+      <Route path="/torty-na-mieru" element={<Cake />} />
+      <Route path="/candy-bar" element={<CandyBar />} />
+      <Route path="/svadobne-vysluzky" element={<Vysluzky />} />
+      <Route path="/ochutnavkovy-box" element={<Ochutnavka />} />
       <Route path="/galeria" element={<Gallery />} />
       <Route path="/objednavka" element={<OrderPage />} />
       <Route path="/kontakt" element={<Contact />} />

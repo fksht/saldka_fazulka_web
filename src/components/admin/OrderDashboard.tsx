@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Calendar, Loader2, Mail, Package, Phone, RefreshCw, User } from 'lucide-react';
 import { dataService } from '../../services/dataService';
 import { Order, OrderStatus } from '../../types';
-import { formatCurrency, formatDate } from '../../utils/format';
+import { formatDate } from '../../utils/format';
+import { formatOrderEstimatedTotal, getOrderPricingSummary } from '../../utils/orderPricing';
 import { Button } from '../ui/Button';
 
 const statusLabels: Record<OrderStatus, string> = {
@@ -65,8 +66,11 @@ const OrderDashboard = () => {
         </div>
       ) : (
         <div className="grid gap-4">
-          {orders.map((order) => (
-            <article key={order.id} className="rounded-lg border border-cream-300 bg-white p-5 shadow-sm sm:p-6">
+          {orders.map((order) => {
+            const pricing = getOrderPricingSummary(order.items);
+
+            return (
+              <article key={order.id} className="rounded-lg border border-cream-300 bg-white p-5 shadow-sm sm:p-6">
               <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
                 <div className="flex items-start gap-3">
                   <div className="rounded-lg bg-cream-100 p-3 text-cocoa-700">
@@ -128,11 +132,16 @@ const OrderDashboard = () => {
                     {order.items.map((item) => (
                       <p key={item.productId}>
                         {item.quantity}x {item.productName}
+                        {item.variant && (
+                          <span className="text-rose-700">
+                            {' '}— {item.variantLabel ? `${item.variantLabel}: ` : ''}{item.variant}
+                          </span>
+                        )}
                       </p>
                     ))}
                   </div>
                   <p className="mt-3 font-bold text-cocoa-950">
-                    {order.estimatedTotal > 0 ? formatCurrency(order.estimatedTotal) : 'Cena po dohode'}
+                    {formatOrderEstimatedTotal({ ...pricing, estimatedTotal: order.estimatedTotal })}
                   </p>
                 </div>
               </div>
@@ -142,8 +151,65 @@ const OrderDashboard = () => {
                   <span className="font-bold text-cocoa-800">Poznámka:</span> {order.note}
                 </div>
               )}
-            </article>
-          ))}
+
+              {order.items
+                .filter((item) => item.tastingDetails)
+                .map((item) => (
+                  <div key={`tast-${item.productId}`} className="mt-5 rounded-lg bg-rose-50/50 p-4 text-sm leading-6 text-cocoa-700">
+                    <p className="font-bold text-cocoa-900">Detaily ochutnávky — {item.productName}</p>
+                    {item.tastingDetails?.selections && item.tastingDetails.selections.length > 0 && (
+                      <p className="mt-1">
+                        <span className="font-semibold">{item.tastingDetails.selectionLabel ?? 'Výber'}:</span>{' '}
+                        {item.tastingDetails.selections.join('; ')}
+                      </p>
+                    )}
+                    {item.tastingDetails?.preferredDate && (
+                      <p className="mt-1">
+                        <span className="font-semibold">Preferovaný termín:</span> {item.tastingDetails.preferredDate}
+                      </p>
+                    )}
+                    {item.tastingDetails?.note && (
+                      <p className="mt-1">
+                        <span className="font-semibold">Poznámka:</span> {item.tastingDetails.note}
+                      </p>
+                    )}
+                  </div>
+                ))}
+
+              {order.items
+                .filter((item) => item.cakeConfiguration?.inspirationImage || item.cakeConfiguration?.inspirationUrl)
+                .map((item) => (
+                  <div key={`insp-${item.productId}`} className="mt-5 rounded-lg bg-cream-50 p-4 text-sm leading-6 text-cocoa-600">
+                    <p className="font-bold text-cocoa-800">Inšpirácia pre {item.productName}</p>
+                    {item.cakeConfiguration?.inspirationUrl && (
+                      <a
+                        href={item.cakeConfiguration.inspirationUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-1 inline-block break-all text-rose-700 underline"
+                      >
+                        {item.cakeConfiguration.inspirationUrl}
+                      </a>
+                    )}
+                    {item.cakeConfiguration?.inspirationImage && (
+                      <a
+                        href={item.cakeConfiguration.inspirationImage}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-2 block w-fit"
+                      >
+                        <img
+                          src={item.cakeConfiguration.inspirationImage}
+                          alt={`Inšpirácia k ${item.productName}`}
+                          className="max-h-48 rounded-lg ring-1 ring-cream-200"
+                        />
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </article>
+            );
+          })}
         </div>
       )}
     </div>
