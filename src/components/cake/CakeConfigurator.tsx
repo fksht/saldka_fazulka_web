@@ -48,6 +48,8 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
   const [urlError, setUrlError] = useState<string | null>(null);
   const [isVegan, setIsVegan] = useState(false);
   const [isLowSugar, setIsLowSugar] = useState(false);
+  const [isGlutenFree, setIsGlutenFree] = useState(false);
+  const [isDairyFree, setIsDairyFree] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
 
   const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -116,6 +118,8 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
     const extras: string[] = [];
     if (isVegan) extras.push('Vegánska verzia');
     if (isLowSugar) extras.push('Low sugar verzia');
+    if (isGlutenFree) extras.push('Bezlepková');
+    if (isDairyFree) extras.push('Bez mlieka');
 
     onAdd({
       baseId: selectedBase.id,
@@ -289,7 +293,7 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
         {/* Diet preferences */}
         <section className="rounded-2xl border border-cream-200 bg-white p-6">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-600">Špeciálne požiadavky</p>
-          <p className="mt-2 text-sm text-cocoa-600">Na želanie pripravím vegánsku alebo low sugar verziu.</p>
+          <p className="mt-2 text-sm text-cocoa-600">Na želanie pripravím vegánsku, bezlepkovú, bez mlieka alebo low sugar verziu.</p>
           <div className="mt-4 flex flex-wrap gap-3">
             <label
               className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
@@ -320,6 +324,36 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
                 className="h-4 w-4 rounded border-cream-300 text-rose-600 focus:ring-rose-200"
               />
               Low sugar verzia
+            </label>
+            <label
+              className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                isGlutenFree
+                  ? 'border-amber-400 bg-amber-50 text-amber-700 ring-2 ring-amber-100'
+                  : 'border-cream-300 bg-cream-50 text-cocoa-700 hover:border-amber-300'
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={isGlutenFree}
+                onChange={(event) => setIsGlutenFree(event.target.checked)}
+                className="h-4 w-4 rounded border-cream-300 text-amber-600 focus:ring-amber-200"
+              />
+              Bezlepková
+            </label>
+            <label
+              className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                isDairyFree
+                  ? 'border-sky-400 bg-sky-50 text-sky-700 ring-2 ring-sky-100'
+                  : 'border-cream-300 bg-cream-50 text-cocoa-700 hover:border-sky-300'
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={isDairyFree}
+                onChange={(event) => setIsDairyFree(event.target.checked)}
+                className="h-4 w-4 rounded border-cream-300 text-sky-600 focus:ring-sky-200"
+              />
+              Bez mlieka
             </label>
           </div>
         </section>
@@ -420,12 +454,14 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
             </p>
             <p className="text-sm text-cocoa-600">{selectedSize.portions}</p>
           </div>
-          {(isVegan || isLowSugar) && (
+          {(isVegan || isLowSugar || isGlutenFree || isDairyFree) && (
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-cocoa-400">Špeciálne</p>
               <ul className="space-y-1 text-sm text-cocoa-700">
                 {isVegan && <li>· Vegánska verzia</li>}
                 {isLowSugar && <li>· Low sugar verzia</li>}
+                {isGlutenFree && <li>· Bezlepková</li>}
+                {isDairyFree && <li>· Bez mlieka</li>}
               </ul>
             </div>
           )}
