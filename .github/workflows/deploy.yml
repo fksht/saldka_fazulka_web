@@ -35,6 +35,9 @@ jobs:
       - name: Build
         run: npm run build
         env:
+          # Served from the custom domain root (sladkafazulka.sk), so the base
+          # path is "/" rather than the repository subpath.
+          VITE_BASE_PATH: /
           # Frontend-only admin password for the client preview. NOTE: this value
           # is bundled into the public JavaScript and is extractable in the browser
           # — it is demo-grade gating, not real security. Set it in GitHub repo
