@@ -1,20 +1,28 @@
-// Supabase Edge Function — sends two emails when a new order is inserted:
+// @ts-nocheck — this is a Deno Edge Function (runs on Supabase, not in the Vite
+// build). The project's TypeScript config doesn't know the Deno global, so type
+// checks here are disabled; it is deployed separately via the Supabase dashboard.
+//
+// Sends two emails when a new order is inserted:
 //   1. a notification to the baker (ORDER_EMAIL_TO)
 //   2. a recap to the customer (order.customerEmail)
 //
-// Triggered by a Database Webhook on INSERT into public.orders. The webhook
-// sends { type, table, record, ... } where `record.data` is the full order.
+// Triggered by a Database Webhook on INSERT into public.orders, where
+// `record.data` is the full order object.
 //
-// Required function secrets (Dashboard → Edge Functions → Manage secrets):
-//   RESEND_API_KEY   — from resend.com
-//   ORDER_EMAIL_TO   — baker notification address (e.g. sladkafazulka@gmail.com)
-//   ORDER_EMAIL_FROM — verified sender, e.g. "Sladká fazuľka <objednavky@sladkafazulka.sk>"
-//   WEBHOOK_SECRET   — optional shared secret checked against the x-webhook-secret header
+// Function secrets (Dashboard → Edge Functions → Manage secrets):
+//   RESEND_API_KEY, ORDER_EMAIL_TO, ORDER_EMAIL_FROM, WEBHOOK_SECRET
+//   SITE_ORIGIN (optional) — base origin for product/logo image URLs
+//   LOGO_URL (optional)    — absolute URL of the logo image
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const ORDER_EMAIL_TO = Deno.env.get('ORDER_EMAIL_TO') ?? 'sladkafazulka@gmail.com';
 const ORDER_EMAIL_FROM = Deno.env.get('ORDER_EMAIL_FROM') ?? 'Sladká fazuľka <onboarding@resend.dev>';
 const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET') ?? '';
+const SITE_ORIGIN = (Deno.env.get('SITE_ORIGIN') ?? 'https://fksht.github.io').replace(/\/$/, '');
+const LOGO_URL =
+  Deno.env.get('LOGO_URL') ?? 'https://fksht.github.io/saldka_fazulka_web/images/sladka-fazulka/logo.png';
+const CONTACT_EMAIL = 'sladkafazulka@gmail.com';
+const CONTACT_PHONE = '+421 911 410 544';
 
 const esc = (value: unknown) =>
   String(value ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c] as string));
@@ -25,13 +33,21 @@ const isEmail = (value: unknown): value is string =>
 const fmtEur = (n: number) => `${n.toFixed(2).replace('.', ',')} €`;
 const isCustomPrice = (pt?: string) => pt === 'from' || pt === 'individual' || pt === 'on_request';
 
+// Order items store a root-relative image path; make it absolute for email.
+const absImageUrl = (url?: string) => {
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
+  if (url.startsWith('/')) return SITE_ORIGIN + url;
+  return ''; // data: URLs or unknown — skip
+};
+
 type OrderItem = {
   quantity?: number;
   productName?: string;
   variant?: string;
   unitPrice?: number | null;
   priceType?: string;
-  unitLabel?: string;
+  imageUrl?: string;
 };
 type Order = {
   id?: string;
@@ -85,27 +101,18 @@ Deno.serve(async (req) => {
       ? `${hasCustom ? 'od ' : ''}${fmtEur(order.estimatedTotal)}`
       : 'Cena po dohode';
 
-  // Item rows: baker version (compact) and customer version (with line price).
+  const logoHeader = `
+    <div style="text-align:center;padding:8px 0 4px">
+      <img src="${LOGO_URL}" alt="Sladká fazuľka" width="140" style="max-width:140px;height:auto" />
+    </div>`;
+
+  // Baker notification (compact list)
   const bakerItems =
     items.map((it) => `<li>${esc(it.quantity)}× ${esc(it.productName)}${it.variant ? ` — ${esc(it.variant)}` : ''}</li>`).join('') ||
     '<li>—</li>';
-
-  const customerRows =
-    items
-      .map(
-        (it) => `
-        <tr>
-          <td style="padding:8px 0;border-bottom:1px solid #efe7df">
-            ${esc(it.quantity)}× ${esc(it.productName)}${it.variant ? ` <span style="color:#9b6a86">— ${esc(it.variant)}</span>` : ''}
-          </td>
-          <td style="padding:8px 0;border-bottom:1px solid #efe7df;text-align:right;white-space:nowrap">${esc(lineTotalText(it))}</td>
-        </tr>`,
-      )
-      .join('') || '<tr><td>—</td><td></td></tr>';
-
-  // 1) Baker notification
   const bakerHtml = `
     <div style="font-family:Arial,sans-serif;color:#3b2b26;line-height:1.6">
+      ${logoHeader}
       <h2 style="margin:0 0 8px">Nová objednávka ${esc(order.id)}</h2>
       <p style="margin:0 0 12px">
         <strong>Zákazník:</strong> ${esc(order.customerName)}<br/>
@@ -121,10 +128,29 @@ Deno.serve(async (req) => {
       ${order.note ? `<p style="margin:8px 0 0"><strong>Poznámka:</strong> ${esc(order.note)}</p>` : ''}
     </div>`;
 
-  // 2) Customer recap
+  // Customer recap (with product thumbnails)
+  const customerRows =
+    items
+      .map((it) => {
+        const img = absImageUrl(it.imageUrl);
+        const thumb = img
+          ? `<img src="${img}" alt="" width="48" height="48" style="border-radius:8px;display:block;object-fit:cover" />`
+          : '';
+        return `
+        <tr>
+          <td width="56" style="padding:8px 0;border-bottom:1px solid #efe7df;vertical-align:middle">${thumb}</td>
+          <td style="padding:8px 0;border-bottom:1px solid #efe7df;vertical-align:middle">
+            ${esc(it.quantity)}× ${esc(it.productName)}${it.variant ? ` <span style="color:#9b6a86">— ${esc(it.variant)}</span>` : ''}
+          </td>
+          <td style="padding:8px 0;border-bottom:1px solid #efe7df;text-align:right;white-space:nowrap;vertical-align:middle">${esc(lineTotalText(it))}</td>
+        </tr>`;
+      })
+      .join('') || '<tr><td colspan="3">—</td></tr>';
+
   const customerHtml = `
-    <div style="font-family:Arial,sans-serif;color:#3b2b26;line-height:1.6;max-width:560px">
-      <h2 style="margin:0 0 6px;font-size:22px">Ďakujeme za vašu objednávku 🤍</h2>
+    <div style="font-family:Arial,sans-serif;color:#3b2b26;line-height:1.6;max-width:580px;margin:0 auto">
+      ${logoHeader}
+      <h2 style="margin:0 0 6px;font-size:22px;text-align:center">Ďakujeme za vašu objednávku 🤍</h2>
       <p style="margin:0 0 16px;color:#6b5750">
         Toto je rekapitulácia vašej požiadavky <strong>${esc(order.id)}</strong>. Objednávka cez web je
         nezáväzný dopyt — <strong>potvrdená je až po vzájomnej dohode</strong>. Čoskoro sa vám ozvem.
@@ -134,7 +160,7 @@ Deno.serve(async (req) => {
         <tbody>${customerRows}</tbody>
         <tfoot>
           <tr>
-            <td style="padding:12px 0 0;font-weight:bold">${esc(totalLabel)}</td>
+            <td colspan="2" style="padding:12px 0 0;font-weight:bold">${esc(totalLabel)}</td>
             <td style="padding:12px 0 0;font-weight:bold;text-align:right">${esc(totalValue)}</td>
           </tr>
         </tfoot>
@@ -146,6 +172,11 @@ Deno.serve(async (req) => {
       }
       ${order.note ? `<p style="margin:12px 0 0"><strong>Vaša poznámka:</strong> ${esc(order.note)}</p>` : ''}
       <p style="margin:20px 0 0;color:#6b5750">S láskou,<br/>Sladká fazuľka</p>
+      <hr style="border:none;border-top:1px solid #efe7df;margin:20px 0 12px" />
+      <p style="margin:0;font-size:12px;color:#9a8c84;text-align:center">
+        Toto je automaticky generovaný email — prosím, <strong>neodpovedajte naň</strong>.<br/>
+        V prípade otázok nás kontaktujte na ${esc(CONTACT_EMAIL)} alebo ${esc(CONTACT_PHONE)}.
+      </p>
     </div>`;
 
   // Baker email is the important one — fail loudly if it doesn't send.
@@ -167,7 +198,6 @@ Deno.serve(async (req) => {
       const custRes = await sendEmail({
         from: ORDER_EMAIL_FROM,
         to: [order.customerEmail],
-        reply_to: ORDER_EMAIL_TO,
         subject: `Vaša objednávka ${order.id} — Sladká fazuľka`,
         html: customerHtml,
       });
