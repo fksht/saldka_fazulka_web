@@ -2,6 +2,7 @@ import { Minus, Plus, ShoppingBasket, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Product } from '../../types';
 import { formatPrice } from '../../utils/format';
+import { isCustomPriceType } from '../../utils/orderPricing';
 import { Button } from '../ui/Button';
 
 type QuantityPickerModalProps = {
@@ -182,8 +183,9 @@ const QuantityPickerModal = ({ product, onClose, onConfirm }: QuantityPickerModa
           {subtotal !== null && (
             <div className="mt-5 rounded-xl border border-cream-200 bg-cream-50 px-4 py-3 text-sm">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-cocoa-600">Orientačná suma</span>
+                <span className="text-cocoa-600">{isCustomPriceType(product.priceType) ? 'Orientačná suma' : 'Spolu'}</span>
                 <span className="font-display text-lg font-semibold text-cocoa-900">
+                  {isCustomPriceType(product.priceType) ? 'od ' : ''}
                   {subtotal.toFixed(2).replace('.', ',')} €
                 </span>
               </div>

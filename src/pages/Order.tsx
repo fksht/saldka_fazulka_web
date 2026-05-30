@@ -187,7 +187,9 @@ const OrderPage = () => {
 
                   <div className="flex flex-col justify-between gap-5 rounded-3xl border border-cream-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center">
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-gold-600">Predpokladaná suma</p>
+                      <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-gold-600">
+                        {hasCustomPricing ? 'Predpokladaná suma' : 'Celková suma'}
+                      </p>
                       <p className="mt-1 font-display text-4xl font-semibold text-cocoa-950">
                         {formatOrderEstimatedTotal({ estimatedTotal: total, hasCustomPricing })}
                       </p>

@@ -94,14 +94,14 @@ const OrderSummary = ({ items, title = 'Rekapitulácia', className = '' }: Order
       </div>
 
       <div className="mt-6 flex items-center justify-between border-t border-cream-200 pt-5">
-        <span className="font-bold text-cocoa-950">Predpokladaná suma</span>
+        <span className="font-bold text-cocoa-950">{pricing.hasCustomPricing ? 'Predpokladaná suma' : 'Celková suma'}</span>
         <span className="font-display text-2xl font-semibold text-cocoa-900">{formatOrderEstimatedTotal(pricing)}</span>
       </div>
 
       <div className="mt-5 rounded-lg border border-cream-200 bg-white p-4 text-sm leading-6 text-cocoa-600">
         {pricing.hasCustomPricing
           ? 'Niektoré položky majú cenu „od" alebo individuálnu. Finálna cena bude potvrdená po dohode.'
-          : 'Suma je orientačná. Finálne detaily a termín potvrdíme po dohode.'}
+          : 'Finálne detaily a termín potvrdíme po dohode.'}
       </div>
     </aside>
   );
