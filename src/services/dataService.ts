@@ -30,6 +30,14 @@ export const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
 
+// Stamp deliveredAt when an order moves to "delivered" (starts the 7-day
+// auto-delete timer); clear it when it moves to any other status.
+const withDeliveredAt = (order: Order, status: OrderStatus): Order => ({
+  ...order,
+  status,
+  deliveredAt: status === 'delivered' ? order.deliveredAt ?? new Date().toISOString() : undefined,
+});
+
 const buildOrder = (order: OrderDraft, id: string): Order => {
   if (order.items.length === 0) throw new Error('Objednávka neobsahuje žiadne položky');
   const pricing = getOrderPricingSummary(order.items);
@@ -65,6 +73,7 @@ export interface DataApi {
   createOrder(order: OrderDraft): Promise<Order>;
   getOrders(): Promise<Order[]>;
   updateOrderStatus(id: string, status: OrderStatus): Promise<Order>;
+  deleteOrder(id: string): Promise<void>;
 
   getCandyBarPackages(): Promise<CandyBarPackage[]>;
   updateCandyBarPackage(
@@ -217,10 +226,16 @@ class LocalDataService implements DataApi {
     const index = orders.findIndex((order) => order.id === id);
     if (index === -1) throw new Error('Objednávka sa nenašla');
 
-    orders[index] = { ...orders[index], status };
+    orders[index] = withDeliveredAt(orders[index], status);
     this.orderRepository.write(orders);
     await wait();
     return orders[index];
+  }
+
+  async deleteOrder(id: string): Promise<void> {
+    const orders = this.orderRepository.read().filter((order) => order.id !== id);
+    this.orderRepository.write(orders);
+    await wait();
   }
 
   async getCandyBarPackages(): Promise<CandyBarPackage[]> {
@@ -469,10 +484,15 @@ class SupabaseDataService implements DataApi {
     const existing = (data?.[0] as { data: Order } | undefined)?.data;
     if (!existing) throw new Error('Objednávka sa nenašla');
 
-    const updated: Order = { ...existing, status };
+    const updated = withDeliveredAt(existing, status);
     const { error } = await this.db.from('orders').update({ status, data: updated }).eq('id', id);
     if (error) this.fail('Stav objednávky sa nepodarilo zmeniť', error);
     return updated;
+  }
+
+  async deleteOrder(id: string): Promise<void> {
+    const { error } = await this.db.from('orders').delete().eq('id', id);
+    if (error) this.fail('Objednávku sa nepodarilo odstrániť', error);
   }
 
   async getCandyBarPackages(): Promise<CandyBarPackage[]> {

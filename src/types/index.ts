@@ -125,7 +125,7 @@ export interface CakeConfiguration {
 
 export type OrderItemKind = 'product' | 'package' | 'box' | 'custom-cake' | 'tasting';
 
-export type OrderStatus = 'new' | 'contacted' | 'confirmed' | 'completed' | 'cancelled';
+export type OrderStatus = 'new' | 'contacted' | 'confirmed' | 'completed' | 'delivered' | 'cancelled';
 
 export interface TastingDetails {
   selections?: string[];
@@ -170,6 +170,8 @@ export interface Order {
   estimatedTotal: number;
   status: OrderStatus;
   createdAt: string;
+  /** Set when the order is marked "delivered"; 7 days later it auto-deletes. */
+  deliveredAt?: string;
 }
 
 export interface OrderDraft {

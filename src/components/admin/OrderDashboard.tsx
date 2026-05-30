@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Calendar, Loader2, Mail, Package, Phone, RefreshCw, User } from 'lucide-react';
+import { Calendar, Loader2, Mail, Package, Phone, RefreshCw, Trash2, User } from 'lucide-react';
 import { dataService } from '../../services/dataService';
 import { Order, OrderStatus } from '../../types';
 import { formatDate } from '../../utils/format';
@@ -11,6 +11,7 @@ const statusLabels: Record<OrderStatus, string> = {
   contacted: 'Kontaktované',
   confirmed: 'Potvrdená',
   completed: 'Dokončená',
+  delivered: 'Doručená',
   cancelled: 'Zrušená',
 };
 
@@ -19,16 +20,35 @@ const statusClass: Record<OrderStatus, string> = {
   contacted: 'bg-amber-50 text-amber-700',
   confirmed: 'bg-sage-50 text-sage-700',
   completed: 'bg-cream-200 text-cocoa-700',
+  delivered: 'bg-emerald-50 text-emerald-700',
   cancelled: 'bg-red-50 text-red-700',
 };
+
+const AUTO_DELETE_MS = 7 * 24 * 60 * 60 * 1000;
+const autoDeleteAt = (order: Order) =>
+  order.status === 'delivered' && order.deliveredAt ? new Date(order.deliveredAt).getTime() + AUTO_DELETE_MS : null;
 
 const OrderDashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchOrders = async () => {
     setLoading(true);
-    const data = await dataService.getOrders();
+    let data = await dataService.getOrders();
+
+    // Auto-delete orders that were delivered more than 7 days ago.
+    const now = Date.now();
+    const expired = data.filter((order) => {
+      const at = autoDeleteAt(order);
+      return at !== null && now >= at;
+    });
+    if (expired.length > 0) {
+      await Promise.all(expired.map((order) => dataService.deleteOrder(order.id).catch(() => undefined)));
+      const expiredIds = new Set(expired.map((order) => order.id));
+      data = data.filter((order) => !expiredIds.has(order.id));
+    }
+
     setOrders(data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
     setLoading(false);
   };
@@ -40,6 +60,17 @@ const OrderDashboard = () => {
   const updateStatus = async (id: string, status: OrderStatus) => {
     await dataService.updateOrderStatus(id, status);
     await fetchOrders();
+  };
+
+  const deleteOrder = async (id: string) => {
+    if (!window.confirm('Naozaj odstrániť túto objednávku? Túto akciu nie je možné vrátiť.')) return;
+    setDeletingId(id);
+    try {
+      await dataService.deleteOrder(id);
+      await fetchOrders();
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -88,18 +119,41 @@ const OrderDashboard = () => {
                   </div>
                 </div>
 
-                <select
-                  value={order.status}
-                  onChange={(event) => void updateStatus(order.id, event.target.value as OrderStatus)}
-                  className="rounded-lg border border-cream-300 bg-white px-4 py-2 text-sm font-semibold text-cocoa-700 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
-                >
-                  {Object.entries(statusLabels).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={order.status}
+                    onChange={(event) => void updateStatus(order.id, event.target.value as OrderStatus)}
+                    className="rounded-lg border border-cream-300 bg-white px-4 py-2 text-sm font-semibold text-cocoa-700 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
+                  >
+                    {Object.entries(statusLabels).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => void deleteOrder(order.id)}
+                    disabled={deletingId === order.id}
+                    aria-label="Odstrániť objednávku"
+                    title="Odstrániť objednávku"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-cream-300 bg-white text-cocoa-500 transition hover:border-red-300 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                  >
+                    {deletingId === order.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" aria-hidden="true" />
+                    )}
+                  </button>
+                </div>
               </div>
+
+              {autoDeleteAt(order) !== null && (
+                <p className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+                  <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                  Automaticky sa zmaže {new Date(autoDeleteAt(order) as number).toLocaleDateString('sk-SK')}
+                </p>
+              )}
 
               <div className="mt-6 grid gap-5 lg:grid-cols-3">
                 <div className="space-y-2 text-sm">
