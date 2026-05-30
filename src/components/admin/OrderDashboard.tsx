@@ -123,7 +123,7 @@ const OrderDashboard = () => {
                   <select
                     value={order.status}
                     onChange={(event) => void updateStatus(order.id, event.target.value as OrderStatus)}
-                    className="rounded-lg border border-cream-300 bg-white px-4 py-2 text-sm font-semibold text-cocoa-700 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
+                    className="rounded-lg border border-cream-300 bg-white px-4 py-2 text-sm font-semibold text-cocoa-700 outline-none focus:outline-none focus:ring-0"
                   >
                     {Object.entries(statusLabels).map(([value, label]) => (
                       <option key={value} value={value}>
@@ -137,7 +137,7 @@ const OrderDashboard = () => {
                     disabled={deletingId === order.id}
                     aria-label="Odstrániť objednávku"
                     title="Odstrániť objednávku"
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-cream-300 bg-white text-cocoa-500 transition hover:border-red-300 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-cream-300 bg-white text-cocoa-500 outline-none transition hover:border-red-300 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-0 disabled:opacity-50"
                   >
                     {deletingId === order.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
