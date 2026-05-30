@@ -196,22 +196,29 @@ const OrderDashboard = () => {
                         </p>
                         {item.cakeConfiguration && (
                           <ul className="mt-1 space-y-0.5 rounded-lg bg-cream-50 p-2 text-xs leading-5 text-cocoa-600">
-                            <li>
-                              · Korpus:{' '}
-                              <strong className="text-cocoa-800">
-                                {item.cakeConfiguration.baseName}
-                                {item.cakeConfiguration.baseVariant ? ` (${item.cakeConfiguration.baseVariant})` : ''}
-                              </strong>
-                            </li>
-                            <li>
-                              · Krémy: <strong className="text-cocoa-800">{item.cakeConfiguration.creamNames.join('; ')}</strong>
-                            </li>
-                            <li>
-                              · Veľkosť:{' '}
-                              <strong className="text-cocoa-800">
-                                {item.cakeConfiguration.sizeName} — {item.cakeConfiguration.sizePortions}
-                              </strong>
-                            </li>
+                            {item.cakeConfiguration.baseName && (
+                              <li>
+                                · Korpus:{' '}
+                                <strong className="text-cocoa-800">
+                                  {item.cakeConfiguration.baseName}
+                                  {item.cakeConfiguration.baseVariant ? ` (${item.cakeConfiguration.baseVariant})` : ''}
+                                </strong>
+                              </li>
+                            )}
+                            {item.cakeConfiguration.creamNames && item.cakeConfiguration.creamNames.length > 0 && (
+                              <li>
+                                · Krémy: <strong className="text-cocoa-800">{item.cakeConfiguration.creamNames.join('; ')}</strong>
+                              </li>
+                            )}
+                            {item.cakeConfiguration.sizeName && (
+                              <li>
+                                · Veľkosť:{' '}
+                                <strong className="text-cocoa-800">
+                                  {item.cakeConfiguration.sizeName}
+                                  {item.cakeConfiguration.sizePortions ? ` — ${item.cakeConfiguration.sizePortions}` : ''}
+                                </strong>
+                              </li>
+                            )}
                             {item.cakeConfiguration.extras && item.cakeConfiguration.extras.length > 0 && (
                               <li>
                                 · Špeciálne:{' '}
