@@ -220,14 +220,20 @@ const OrderForm = ({ items, total, onSubmit, onCancel }: OrderFormProps) => {
           )}
 
           <label className="sm:col-span-2">
-            <span className="mb-1 block text-sm font-semibold text-cocoa-700">Poznámka / predstava</span>
+            <span className="mb-1 block text-sm font-semibold text-cocoa-700">
+              {hasCustomCake ? 'Poznámka / predstava' : 'Poznámka'}
+            </span>
             <span className="relative block">
               <MessageSquare className="absolute left-4 top-4 h-4 w-4 text-cocoa-400" aria-hidden="true" />
               <textarea
                 {...register('note')}
                 rows={5}
                 className="w-full rounded-lg border border-cream-200 bg-white py-3 pl-11 pr-4 text-cocoa-900 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
-                placeholder="Alergie, farby, téma oslavy, text na tortu, čas vyzdvihnutia…"
+                placeholder={
+                  hasCustomCake
+                    ? 'Alergie, farby, téma oslavy, text na tortu, čas vyzdvihnutia…'
+                    : 'Alergie, čas vyzdvihnutia, špeciálne želania…'
+                }
               />
             </span>
             <FieldError message={errors.note?.message} />
