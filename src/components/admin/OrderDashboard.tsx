@@ -183,56 +183,16 @@ const OrderDashboard = () => {
 
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-cocoa-400">Položky</p>
-                  <div className="mt-2 space-y-2 text-sm text-cocoa-700">
+                  <div className="mt-2 space-y-1 text-sm text-cocoa-700">
                     {items.map((item) => (
-                      <div key={item.productId}>
-                        <p>
-                          {item.quantity}x {item.productName}
-                          {item.variant && (
-                            <span className="text-rose-700">
-                              {' '}— {item.variantLabel ? `${item.variantLabel}: ` : ''}{item.variant}
-                            </span>
-                          )}
-                        </p>
-                        {item.cakeConfiguration && (
-                          <ul className="mt-1 space-y-0.5 rounded-lg bg-cream-50 p-2 text-xs leading-5 text-cocoa-600">
-                            {item.cakeConfiguration.baseName && (
-                              <li>
-                                · Korpus:{' '}
-                                <strong className="text-cocoa-800">
-                                  {item.cakeConfiguration.baseName}
-                                  {item.cakeConfiguration.baseVariant ? ` (${item.cakeConfiguration.baseVariant})` : ''}
-                                </strong>
-                              </li>
-                            )}
-                            {item.cakeConfiguration.creamNames && item.cakeConfiguration.creamNames.length > 0 && (
-                              <li>
-                                · Krémy: <strong className="text-cocoa-800">{item.cakeConfiguration.creamNames.join('; ')}</strong>
-                              </li>
-                            )}
-                            {item.cakeConfiguration.sizeName && (
-                              <li>
-                                · Veľkosť:{' '}
-                                <strong className="text-cocoa-800">
-                                  {item.cakeConfiguration.sizeName}
-                                  {item.cakeConfiguration.sizePortions ? ` — ${item.cakeConfiguration.sizePortions}` : ''}
-                                </strong>
-                              </li>
-                            )}
-                            {item.cakeConfiguration.extras && item.cakeConfiguration.extras.length > 0 && (
-                              <li>
-                                · Špeciálne:{' '}
-                                <strong className="text-emerald-700">{item.cakeConfiguration.extras.join(', ')}</strong>
-                              </li>
-                            )}
-                            {item.cakeConfiguration.note && (
-                              <li>
-                                · Poznámka k torte: <strong className="text-cocoa-800">{item.cakeConfiguration.note}</strong>
-                              </li>
-                            )}
-                          </ul>
+                      <p key={item.productId}>
+                        {item.quantity}x {item.productName}
+                        {item.variant && (
+                          <span className="text-rose-700">
+                            {' '}— {item.variantLabel ? `${item.variantLabel}: ` : ''}{item.variant}
+                          </span>
                         )}
-                      </div>
+                      </p>
                     ))}
                   </div>
                   <p className="mt-3 font-bold text-cocoa-950">
@@ -246,6 +206,63 @@ const OrderDashboard = () => {
                   <span className="font-bold text-cocoa-800">Poznámka:</span> {order.note}
                 </div>
               )}
+
+              {items
+                .filter((item) => item.cakeConfiguration || item.note)
+                .map((item) => (
+                  <div
+                    key={`cake-${item.productId}`}
+                    className="mt-5 rounded-lg border border-cream-200 bg-cream-50 p-4 text-sm leading-6 text-cocoa-700"
+                  >
+                    <p className="font-bold text-cocoa-900">{item.productName}</p>
+                    {item.cakeConfiguration && (
+                      <dl className="mt-2 space-y-1">
+                        {item.cakeConfiguration.baseName && (
+                          <div className="flex gap-2">
+                            <dt className="w-24 flex-none font-semibold text-cocoa-500">Korpus</dt>
+                            <dd className="text-cocoa-800">
+                              {item.cakeConfiguration.baseName}
+                              {item.cakeConfiguration.baseVariant ? ` (${item.cakeConfiguration.baseVariant})` : ''}
+                            </dd>
+                          </div>
+                        )}
+                        {item.cakeConfiguration.creamNames && item.cakeConfiguration.creamNames.length > 0 && (
+                          <div className="flex gap-2">
+                            <dt className="w-24 flex-none font-semibold text-cocoa-500">Krémy</dt>
+                            <dd className="text-cocoa-800">{item.cakeConfiguration.creamNames.join('; ')}</dd>
+                          </div>
+                        )}
+                        {item.cakeConfiguration.sizeName && (
+                          <div className="flex gap-2">
+                            <dt className="w-24 flex-none font-semibold text-cocoa-500">Veľkosť</dt>
+                            <dd className="text-cocoa-800">
+                              {item.cakeConfiguration.sizeName}
+                              {item.cakeConfiguration.sizePortions ? ` — ${item.cakeConfiguration.sizePortions}` : ''}
+                            </dd>
+                          </div>
+                        )}
+                        {item.cakeConfiguration.extras && item.cakeConfiguration.extras.length > 0 && (
+                          <div className="flex gap-2">
+                            <dt className="w-24 flex-none font-semibold text-cocoa-500">Špeciálne</dt>
+                            <dd className="text-emerald-700">{item.cakeConfiguration.extras.join(', ')}</dd>
+                          </div>
+                        )}
+                      </dl>
+                    )}
+                    {item.cakeConfiguration?.note && (
+                      <div className="mt-2 flex gap-2">
+                        <span className="w-24 flex-none font-semibold text-cocoa-500">Téma / dekor</span>
+                        <span className="text-cocoa-800">{item.cakeConfiguration.note}</span>
+                      </div>
+                    )}
+                    {item.note && (
+                      <div className="mt-2 flex gap-2">
+                        <span className="w-24 flex-none font-semibold text-cocoa-500">Poznámka k torte</span>
+                        <span className="text-cocoa-800">{item.note}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
 
               {items
                 .filter((item) => item.tastingDetails)
