@@ -173,7 +173,7 @@ const TastingBoxModal = ({ tasting, onClose, onConfirm }: TastingBoxModalProps) 
             <div>
               <p className="text-sm font-semibold text-cocoa-700">Označte dezerty, ktoré chcete ochutnať</p>
               <p className="mt-1 text-xs text-cocoa-500">
-                Voliteľné — vyberte max <strong>{MAX_DESSERT_SELECTIONS}</strong> ks (označené {selectedSelections.length}/{MAX_DESSERT_SELECTIONS}). Pri ochutnávke spolu doladíme konečný výber a cenu.
+                Voliteľné — vyberte max <strong>{MAX_DESSERT_SELECTIONS}</strong> ks (označené {selectedSelections.length}/{MAX_DESSERT_SELECTIONS}). Pri ochutnávke spolu doladím konečný výber a cenu.
               </p>
               <div className="mt-4 space-y-4">
                 {dessertGroups.map(([category, list]) => (
@@ -221,7 +221,7 @@ const TastingBoxModal = ({ tasting, onClose, onConfirm }: TastingBoxModalProps) 
                   className="w-full rounded-lg border border-cream-300 bg-white py-2.5 pl-10 pr-4 text-sm text-cocoa-900 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
                 />
               </span>
-              <span className="mt-1 block text-xs text-cocoa-500">Voliteľné. Konkrétny termín doladíme.</span>
+              <span className="mt-1 block text-xs text-cocoa-500">Voliteľné. Konkrétny termín doladím.</span>
             </label>
             <div />
           </div>

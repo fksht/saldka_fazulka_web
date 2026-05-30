@@ -80,13 +80,13 @@ const createEmailPayload = (order: Order): EmailPayload => {
     customerSubject: sanitizeSubject(`Rekapitulácia objednávky – Sladká fazuľka (${order.id})`),
     bakerSubject: sanitizeSubject(`Nová objednávka – Sladká fazuľka (${order.id})`),
     customerHtml: `
-      <h1>Ďakujeme za objednávku, ${escapeHtml(order.customerName)}</h1>
-      <p>Prijali sme vašu nezáväznú objednávku a nižšie posielame rekapituláciu.</p>
+      <h1>Ďakujem za objednávku, ${escapeHtml(order.customerName)}</h1>
+      <p>Prijali sme vašu nezáväznú objednávku a nižšie posielam rekapituláciu.</p>
       <ul>${formatOrderItems(order)}</ul>
       <p><strong>Termín:</strong> ${formatDate(order.pickupDate)}</p>
       <p><strong>Spôsob prevzatia:</strong> ${escapeHtml(pickupModeLabel(order.pickupMode))}</p>
       <p><strong>Predpokladaná suma:</strong> ${escapeHtml(estimatedTotal)}</p>
-      ${pricing.hasCustomPricing ? '<p>Niektoré položky majú cenu „od" alebo individuálnu. Finálnu cenu potvrdíme po vzájomnej dohode.</p>' : ''}
+      ${pricing.hasCustomPricing ? '<p>Niektoré položky majú cenu „od" alebo individuálnu. Finálnu cenu potvrdím po vzájomnej dohode.</p>' : ''}
       <p>Objednávka je potvrdená až po vzájomnej dohode.</p>
     `,
     bakerHtml: `

@@ -34,7 +34,7 @@ const trustPills = [
 const steps = [
   { title: 'Vyberiete si dobrotu', text: 'Z ponuky, candy baru, výslužiek alebo cez konfigurátor torty na mieru.', icon: ShoppingBasket },
   { title: 'Odošlete nezáväzný dopyt', text: 'Pridáte termín, počet hostí, alergie a poznámku k dekoru.', icon: MessageCircle },
-  { title: 'Spolu doladíme detaily', text: 'Potvrdíme dekor, cenu, presný čas a vyzdvihnutie.', icon: CheckCircle2 },
+  { title: 'Spolu doladím detaily', text: 'Potvrdíme dekor, cenu, presný čas a vyzdvihnutie.', icon: CheckCircle2 },
   { title: 'Sladkosti budú pripravené', text: 'Čerstvo upečené, krásne aranžované, presne na váš deň.', icon: CalendarHeart },
 ];
 
@@ -47,7 +47,7 @@ const faqs = [
   {
     question: 'Ako prebieha potvrdenie objednávky?',
     answer:
-      'Po odoslaní formulára vám príde rekapitulácia na email. Objednávku potvrdíme až po vzájomnej dohode — väčšinou krátkou správou alebo telefonátom. Vďaka tomu si overíme dostupnosť termínu, dekor a finálnu cenu.',
+      'Po odoslaní formulára vám príde rekapitulácia na email. Objednávku potvrdím až po vzájomnej dohode — väčšinou krátkou správou alebo telefonátom. Vďaka tomu si overíme dostupnosť termínu, dekor a finálnu cenu.',
   },
   {
     question: 'Robíte alternatívy pre alergikov?',

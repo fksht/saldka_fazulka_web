@@ -101,7 +101,7 @@ const OrderSummary = ({ items, title = 'Rekapitulácia', className = '' }: Order
       <div className="mt-5 rounded-lg border border-cream-200 bg-white p-4 text-sm leading-6 text-cocoa-600">
         {pricing.hasCustomPricing
           ? 'Niektoré položky majú cenu „od" alebo individuálnu. Finálna cena bude potvrdená po dohode.'
-          : 'Finálne detaily a termín potvrdíme po dohode.'}
+          : 'Finálne detaily a termín potvrdím po dohode.'}
       </div>
     </aside>
   );

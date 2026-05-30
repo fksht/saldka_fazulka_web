@@ -150,7 +150,7 @@ Deno.serve(async (req) => {
   const customerHtml = `
     <div style="font-family:Arial,sans-serif;color:#3b2b26;line-height:1.6;max-width:580px;margin:0 auto">
       ${logoHeader}
-      <h2 style="margin:0 0 6px;font-size:22px;text-align:center">Ďakujeme za vašu objednávku 🤍</h2>
+      <h2 style="margin:0 0 6px;font-size:22px;text-align:center">Ďakujem za vašu objednávku 🤍</h2>
       <p style="margin:0 0 16px;color:#6b5750">
         Toto je rekapitulácia vašej požiadavky <strong>${esc(order.id)}</strong>. Objednávka cez web je
         nezáväzný dopyt — <strong>potvrdená je až po vzájomnej dohode</strong>. Čoskoro sa vám ozvem.
@@ -167,7 +167,7 @@ Deno.serve(async (req) => {
       </table>
       ${
         hasCustom
-          ? `<p style="margin:8px 0 0;font-size:13px;color:#9b6a86">Niektoré položky majú cenu „od" alebo individuálnu — finálnu cenu potvrdíme po dohode.</p>`
+          ? `<p style="margin:8px 0 0;font-size:13px;color:#9b6a86">Niektoré položky majú cenu „od" alebo individuálnu — finálnu cenu potvrdím po dohode.</p>`
           : ''
       }
       ${order.note ? `<p style="margin:12px 0 0"><strong>Vaša poznámka:</strong> ${esc(order.note)}</p>` : ''}
@@ -175,7 +175,7 @@ Deno.serve(async (req) => {
       <hr style="border:none;border-top:1px solid #efe7df;margin:20px 0 12px" />
       <p style="margin:0;font-size:12px;color:#9a8c84;text-align:center">
         Toto je automaticky generovaný email — prosím, <strong>neodpovedajte naň</strong>.<br/>
-        V prípade otázok nás kontaktujte na ${esc(CONTACT_EMAIL)} alebo ${esc(CONTACT_PHONE)}.
+        V prípade otázok ma kontaktujte na ${esc(CONTACT_EMAIL)} alebo ${esc(CONTACT_PHONE)}.
       </p>
     </div>`;
 

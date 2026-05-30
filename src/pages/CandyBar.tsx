@@ -138,7 +138,7 @@ const CandyBar = () => {
               Chcete candy bar po kuse?
             </h2>
             <p className="mt-3 max-w-2xl leading-7 text-cocoa-600">
-              Pridajte konkrétne zákusky priamo z cenníka — odporúčané množstvá doladíme spolu, aby vám nič nechýbalo a zároveň nezostalo priveľa.
+              Pridajte konkrétne zákusky priamo z cenníka — odporúčané množstvá doladím spolu, aby vám nič nechýbalo a zároveň nezostalo priveľa.
             </p>
           </div>
           <ButtonLink to="/ponuka" variant="secondary">

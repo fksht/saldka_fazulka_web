@@ -98,7 +98,7 @@ const Ochutnavka = () => {
               Ochutnávka uľahčí výber zákuskov pre candy bar aj tortu
             </h3>
             <p className="mt-3 max-w-2xl leading-7 text-cocoa-600">
-              Ak si chcete byť istí každým detailom, otvorte konfigurátor torty alebo si pozrite candy bar balíčky — výslednú kombináciu doladíme pri ochutnávke.
+              Ak si chcete byť istí každým detailom, otvorte konfigurátor torty alebo si pozrite candy bar balíčky — výslednú kombináciu doladím pri ochutnávke.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <ButtonLink to="/torty-na-mieru" variant="secondary">Konfigurátor torty</ButtonLink>

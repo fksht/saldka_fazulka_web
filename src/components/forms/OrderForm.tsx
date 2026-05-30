@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Calendar, Heart, Loader2, Mail, MessageSquare, Phone, Send, User, Users } from 'lucide-react';
+import { Calendar, Loader2, Mail, MessageSquare, Phone, Send, User, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -33,7 +33,6 @@ const baseSchemaShape = {
   customerPhone: z.string().trim().refine(isValidPhone, 'Zadajte platné telefónne číslo'),
   eventType: z.string().optional(),
   servings: z.coerce.number().min(1, 'Počet porcií musí byť aspoň 1').max(500, 'Pre väčšie objednávky napíšte počet do poznámky').optional().or(z.literal('')),
-  preferredFlavor: z.string().optional(),
   note: z.string().max(1200, 'Poznámka je príliš dlhá').optional(),
 };
 
@@ -80,6 +79,8 @@ const OrderForm = ({ items, total, onSubmit, onCancel }: OrderFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const hasCustomCake = items.some((item) => item.kind === 'custom-cake');
+  // The servings/guests field is only relevant for the bigger "individual" cake size.
+  const hasIndividualSizeCake = items.some((item) => item.cakeConfiguration?.sizeId === 'size-individualna');
   const isTastingOnly = items.length > 0 && items.every((item) => item.kind === 'tasting');
   const requiresPickup = !isTastingOnly;
 
@@ -95,7 +96,6 @@ const OrderForm = ({ items, total, onSubmit, onCancel }: OrderFormProps) => {
     defaultValues: {
       eventType: '',
       pickupMode: requiresPickup ? 'pickup-kosice' : undefined,
-      preferredFlavor: '',
       note: '',
     },
   });
@@ -113,7 +113,6 @@ const OrderForm = ({ items, total, onSubmit, onCancel }: OrderFormProps) => {
         pickupMode: requiresPickup ? (data.pickupMode as PickupMode) : undefined,
         eventType: data.eventType || undefined,
         servings: typeof data.servings === 'number' ? data.servings : undefined,
-        preferredFlavor: data.preferredFlavor || undefined,
         note: data.note || undefined,
         items,
         estimatedTotal: total,
@@ -173,7 +172,7 @@ const OrderForm = ({ items, total, onSubmit, onCancel }: OrderFormProps) => {
                   <input type="date" min={minDate} {...register('pickupDate')} className={iconInputClass} />
                 </span>
                 <span className="mt-1 block text-xs text-cocoa-500">
-                  Najskorší možný termín je {MIN_LEAD_DAYS} dní od dnes. Pre torty a candy bary odporúčame 4 – 8 týždňov vopred.
+                  Najskorší možný termín je {MIN_LEAD_DAYS} dní od dnes. Pre torty a candy bary odporúčam 4 – 8 týždňov vopred.
                 </span>
                 <FieldError message={errors.pickupDate?.message} />
               </label>
@@ -190,43 +189,34 @@ const OrderForm = ({ items, total, onSubmit, onCancel }: OrderFormProps) => {
 
           {isTastingOnly && (
             <p className="sm:col-span-2 rounded-xl border border-rose-200 bg-rose-50/60 px-4 py-3 text-sm leading-6 text-cocoa-700">
-              Termín ochutnávky ste si vybrali pri pridaní do dopytu — finálny dátum doladíme po našom kontakte.
+              Termín ochutnávky ste si vybrali pri pridaní do dopytu — finálny dátum doladím po našom kontakte.
             </p>
           )}
 
           {hasCustomCake && (
-            <>
-              <label>
-                <span className="mb-1 block text-sm font-semibold text-cocoa-700">Typ udalosti</span>
-                <select {...register('eventType')} className={inputClass}>
-                  <option value="">Vyberte možnosť</option>
-                  <option>Svadba</option>
-                  <option>Oslava / narodeniny</option>
-                  <option>Krstiny</option>
-                  <option>Firemné pohostenie</option>
-                  <option>Darček</option>
-                  <option>Iné</option>
-                </select>
-              </label>
+            <label>
+              <span className="mb-1 block text-sm font-semibold text-cocoa-700">Typ udalosti</span>
+              <select {...register('eventType')} className={inputClass}>
+                <option value="">Vyberte možnosť</option>
+                <option>Svadba</option>
+                <option>Oslava / narodeniny</option>
+                <option>Krstiny</option>
+                <option>Firemné pohostenie</option>
+                <option>Darček</option>
+                <option>Iné</option>
+              </select>
+            </label>
+          )}
 
-              <label>
-                <span className="mb-1 block text-sm font-semibold text-cocoa-700">Počet porcií / hostí</span>
-                <span className="relative block">
-                  <Users className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-cocoa-400" aria-hidden="true" />
-                  <input type="number" min={1} {...register('servings')} className={iconInputClass} placeholder="napr. 40" />
-                </span>
-                <FieldError message={errors.servings?.message} />
-              </label>
-
-              <label>
-                <span className="mb-1 block text-sm font-semibold text-cocoa-700">Preferovaná príchuť</span>
-                <span className="relative block">
-                  <Heart className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-cocoa-400" aria-hidden="true" />
-                  <input {...register('preferredFlavor')} className={iconInputClass} placeholder="čokoláda, ovocie, pistácia…" />
-                </span>
-              </label>
-
-            </>
+          {hasIndividualSizeCake && (
+            <label>
+              <span className="mb-1 block text-sm font-semibold text-cocoa-700">Počet porcií / hostí</span>
+              <span className="relative block">
+                <Users className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-cocoa-400" aria-hidden="true" />
+                <input type="number" min={1} {...register('servings')} className={iconInputClass} placeholder="napr. 40" />
+              </span>
+              <FieldError message={errors.servings?.message} />
+            </label>
           )}
 
           <label className="sm:col-span-2">

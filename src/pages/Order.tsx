@@ -38,7 +38,7 @@ const OrderPage = () => {
             <CheckCircle2 className="h-8 w-8" aria-hidden="true" />
           </div>
           <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Dopyt odoslaný</p>
-          <h1 className="mt-3 font-display text-4xl font-semibold text-cocoa-950 sm:text-5xl">Ďakujeme za objednávku</h1>
+          <h1 className="mt-3 font-display text-4xl font-semibold text-cocoa-950 sm:text-5xl">Ďakujem za objednávku</h1>
           <div className="mt-5">
             <GoldDivider />
           </div>
@@ -70,7 +70,7 @@ const OrderPage = () => {
             <GoldDivider />
           </div>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-cocoa-600 sm:text-lg sm:leading-8">
-            Vyberte produkty, doplňte svoju predstavu a odošlite dopyt. Platba zatiaľ neprebieha online — termín a finálnu cenu si potvrdíme osobne.
+            Vyberte produkty, doplňte svoju predstavu a odošlite dopyt. Platba zatiaľ neprebieha online — termín a finálnu cenu si potvrdím osobne.
           </p>
         </div>
       </section>
