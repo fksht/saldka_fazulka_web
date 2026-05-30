@@ -41,6 +41,24 @@ const absImageUrl = (url?: string) => {
   return ''; // data: URLs or unknown — skip
 };
 
+// Generic cake image (same folder as the logo), used as a fallback for custom
+// cakes whose own image is a base64 preview that can't be shown in email.
+const DEFAULT_CAKE_IMAGE = LOGO_URL.replace(/[^/]+$/, 'cake-3tier.jpg');
+
+const formatDate = (iso?: string) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return String(iso);
+  return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+};
+
+type CakeConfiguration = {
+  baseName?: string;
+  baseVariant?: string;
+  creamNames?: string[];
+  sizeName?: string;
+  sizePortions?: string;
+};
 type OrderItem = {
   quantity?: number;
   productName?: string;
@@ -48,6 +66,8 @@ type OrderItem = {
   unitPrice?: number | null;
   priceType?: string;
   imageUrl?: string;
+  kind?: string;
+  cakeConfiguration?: CakeConfiguration;
 };
 type Order = {
   id?: string;
@@ -60,6 +80,23 @@ type Order = {
   note?: string;
   items?: OrderItem[];
   estimatedTotal?: number;
+  createdAt?: string;
+};
+
+// Short description of a configured custom cake (korpus · krémy · veľkosť).
+const cakeDescription = (cfg?: CakeConfiguration) => {
+  if (!cfg) return '';
+  const parts: string[] = [];
+  if (cfg.baseName) parts.push(`Korpus: ${cfg.baseName}${cfg.baseVariant ? ` (${cfg.baseVariant})` : ''}`);
+  if (cfg.creamNames && cfg.creamNames.length) parts.push(`Krémy: ${cfg.creamNames.join(', ')}`);
+  if (cfg.sizeName) parts.push(`Veľkosť: ${cfg.sizeName}${cfg.sizePortions ? ` — ${cfg.sizePortions}` : ''}`);
+  return parts.join(' · ');
+};
+
+const itemImage = (it: OrderItem) => {
+  const img = absImageUrl(it.imageUrl);
+  if (img) return img;
+  return it.kind === 'custom-cake' ? DEFAULT_CAKE_IMAGE : '';
 };
 
 const lineTotalText = (it: OrderItem) => {
@@ -132,17 +169,19 @@ Deno.serve(async (req) => {
   const customerRows =
     items
       .map((it) => {
-        const img = absImageUrl(it.imageUrl);
+        const img = itemImage(it);
         const thumb = img
           ? `<img src="${img}" alt="" width="48" height="48" style="border-radius:8px;display:block;object-fit:cover" />`
           : '';
+        const desc = cakeDescription(it.cakeConfiguration);
         return `
         <tr>
-          <td width="56" style="padding:8px 0;border-bottom:1px solid #efe7df;vertical-align:middle">${thumb}</td>
-          <td style="padding:8px 0;border-bottom:1px solid #efe7df;vertical-align:middle">
+          <td width="56" style="padding:8px 0;border-bottom:1px solid #efe7df;vertical-align:top">${thumb}</td>
+          <td style="padding:8px 0;border-bottom:1px solid #efe7df;vertical-align:top">
             ${esc(it.quantity)}× ${esc(it.productName)}${it.variant ? ` <span style="color:#9b6a86">— ${esc(it.variant)}</span>` : ''}
+            ${desc ? `<div style="font-size:12px;color:#9a8c84;margin-top:2px">${esc(desc)}</div>` : ''}
           </td>
-          <td style="padding:8px 0;border-bottom:1px solid #efe7df;text-align:right;white-space:nowrap;vertical-align:middle">${esc(lineTotalText(it))}</td>
+          <td style="padding:8px 0;border-bottom:1px solid #efe7df;text-align:right;white-space:nowrap;vertical-align:top">${esc(lineTotalText(it))}</td>
         </tr>`;
       })
       .join('') || '<tr><td colspan="3">—</td></tr>';
@@ -155,7 +194,7 @@ Deno.serve(async (req) => {
         Toto je rekapitulácia vašej požiadavky <strong>${esc(order.id)}</strong>. Objednávka cez web je
         nezáväzný dopyt — <strong>potvrdená je až po vzájomnej dohode</strong>. Čoskoro sa vám ozvem.
       </p>
-      ${order.pickupDate ? `<p style="margin:0 0 4px"><strong>Termín:</strong> ${esc(order.pickupDate)}</p>` : ''}
+      <p style="margin:0 0 4px"><strong>Dátum objednávky:</strong> ${esc(formatDate(order.createdAt))}</p>
       <table style="width:100%;border-collapse:collapse;margin:12px 0">
         <tbody>${customerRows}</tbody>
         <tfoot>
