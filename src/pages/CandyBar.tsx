@@ -7,11 +7,13 @@ import SectionHeader from '../components/ui/SectionHeader';
 import Toast from '../components/ui/Toast';
 import { ButtonLink } from '../components/ui/Button';
 import { useCart } from '../context/CartContext';
+import { useSeo } from '../hooks/useSeo';
 import { CANDY_BAR_INFO, SECTION_IMAGES } from '../data/sladkaFazulkaCatalog';
 import { dataService } from '../services/dataService';
 import { CandyBarPackage } from '../types';
 
 const CandyBar = () => {
+  useSeo('/candy-bar');
   const navigate = useNavigate();
   const { addPackage } = useCart();
   const [packages, setPackages] = useState<CandyBarPackage[]>([]);
@@ -41,7 +43,7 @@ const CandyBar = () => {
         <div className="watercolor-wash absolute inset-0" aria-hidden="true" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Candy bar</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Candy bar</p>
             <h1 className="mt-3 font-display text-4xl font-semibold leading-[1.05] text-cocoa-950 sm:text-5xl lg:text-6xl">
               Sladký servis na mieru
             </h1>
@@ -133,7 +135,7 @@ const CandyBar = () => {
       <section className="py-16">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-6 rounded-3xl border border-cream-200 bg-cream-50 px-6 py-10 sm:px-10 md:flex-row md:items-center">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Vlastná zostava</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Vlastná zostava</p>
             <h2 className="mt-2 font-display text-3xl font-semibold text-cocoa-950">
               Chcete candy bar po kuse?
             </h2>

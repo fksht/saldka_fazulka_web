@@ -25,7 +25,7 @@ const AllergenBadges = ({ allergens, size = 'sm', emptyLabel = 'Alergény budú 
             className={`inline-flex items-center gap-1 rounded-full border border-gold-200 bg-cream-50 font-bold uppercase tracking-[0.12em] text-cocoa-700 ${padding}`}
             title={name}
           >
-            <span className="text-gold-600">{id}</span>
+            <span className="text-gold-700">{id}</span>
             <span className="hidden text-cocoa-500 normal-case tracking-normal sm:inline">{name}</span>
           </span>
         );

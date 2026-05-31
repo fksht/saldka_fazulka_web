@@ -17,7 +17,7 @@ const WeddingBoxCard = ({ box, onRequest }: WeddingBoxCardProps) => (
     <div className="relative mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 text-rose-700 ring-1 ring-rose-100">
       <Gift className="h-6 w-6" aria-hidden="true" />
     </div>
-    <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-gold-600">Výslužka Deluxe</p>
+    <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-gold-700">Výslužka Deluxe</p>
     <h3 className="mt-2 font-display text-3xl font-semibold leading-tight text-cocoa-950">{box.name}</h3>
     <p className="mt-2 text-sm text-cocoa-600">{box.suitableFor}</p>
 
@@ -28,7 +28,7 @@ const WeddingBoxCard = ({ box, onRequest }: WeddingBoxCardProps) => (
 
     <div className="mt-auto flex items-end justify-between gap-3 border-t border-dashed border-cream-200 pt-6">
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-wider text-gold-600">Cena</p>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-gold-700">Cena</p>
         <p className="font-display text-3xl font-semibold leading-none text-cocoa-950">
           {formatCurrency(box.price)}
           <span className="ml-1 text-base font-normal text-cocoa-500">/ krabička</span>

@@ -104,7 +104,7 @@ const TastingBoxModal = ({ tasting, onClose, onConfirm }: TastingBoxModalProps) 
       >
         <div className="watercolor-wash relative flex items-start justify-between gap-3 border-b border-cream-200 px-5 py-4 sm:px-7 sm:py-5">
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold-600">Dopytovať ochutnávku</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold-700">Dopytovať ochutnávku</p>
             <h3 className="mt-1 font-display text-xl font-semibold leading-tight text-cocoa-950 sm:text-2xl">
               {tasting.title}
             </h3>

@@ -52,7 +52,7 @@ const ProductCard = ({ product, onSelect, onAddToCart }: ProductCardProps) => (
     </button>
 
     <div className="flex flex-1 flex-col px-5 pb-5 pt-4">
-      <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold-600">{product.category}</p>
+      <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold-700">{product.category}</p>
       <h3 className="mt-2 font-display text-xl font-semibold leading-tight text-cocoa-950">{product.name}</h3>
       <p className="mt-2 line-clamp-3 flex-1 text-sm leading-6 text-cocoa-600">{product.description}</p>
 

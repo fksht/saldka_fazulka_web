@@ -152,7 +152,7 @@ const AdminPage = () => {
               <Lock className="h-6 w-6" aria-hidden="true" />
             </div>
             <div className="text-center">
-              <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Sladká fazuľka</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Sladká fazuľka</p>
               <h1 className="mt-2 font-display text-3xl font-semibold text-cocoa-950">Správa ponuky</h1>
               <p className="mt-3 text-sm leading-6 text-cocoa-600">
                 Súkromný vstup pre úpravu ponuky, objednávok a galérie.
@@ -226,7 +226,7 @@ const AdminPage = () => {
             />
             <span className="flex flex-col">
               <span className="font-display text-3xl font-semibold italic text-cocoa-950">Sladká fazuľka</span>
-              <span className="mt-1 text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Správa ponuky</span>
+              <span className="mt-1 text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Správa ponuky</span>
             </span>
           </Link>
           <div className="flex flex-wrap gap-2">

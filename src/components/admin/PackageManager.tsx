@@ -160,7 +160,7 @@ const PackageManager = () => {
       <form onSubmit={handleSubmit} className="rounded-2xl border border-cream-200 bg-white p-5 shadow-sm sm:p-7">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-600">
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-700">
               {isNew ? 'Nový balíček' : 'Upraviť balíček'}
             </p>
             <h2 className="mt-2 font-display text-3xl font-semibold text-cocoa-950">

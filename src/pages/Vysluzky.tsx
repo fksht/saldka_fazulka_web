@@ -5,10 +5,12 @@ import WeddingBoxCard from '../components/vysluzky/WeddingBoxCard';
 import SectionHeader from '../components/ui/SectionHeader';
 import Toast from '../components/ui/Toast';
 import { useCart } from '../context/CartContext';
+import { useSeo } from '../hooks/useSeo';
 import { SECTION_IMAGES, WEDDING_BOXES, WEDDING_BOX_NOTE } from '../data/sladkaFazulkaCatalog';
 import { WeddingBox } from '../types';
 
 const Vysluzky = () => {
+  useSeo('/svadobne-vysluzky');
   const navigate = useNavigate();
   const { addWeddingBox } = useCart();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -24,7 +26,7 @@ const Vysluzky = () => {
         <div className="watercolor-wash absolute inset-0" aria-hidden="true" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Svadobné výslužky Deluxe</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Svadobné výslužky Deluxe</p>
             <h1 className="mt-3 font-display text-4xl font-semibold leading-[1.05] text-cocoa-950 sm:text-5xl lg:text-6xl">
               Sladká bodka za vaším veľkým dňom
             </h1>

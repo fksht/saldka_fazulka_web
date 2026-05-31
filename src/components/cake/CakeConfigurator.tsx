@@ -292,7 +292,7 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
 
         {/* Diet preferences */}
         <section className="rounded-2xl border border-cream-200 bg-white p-6">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-600">Špeciálne požiadavky</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-700">Špeciálne požiadavky</p>
           <p className="mt-2 text-sm text-cocoa-600">Na želanie pripravím vegánsku, bezlepkovú, bez mlieka alebo low sugar verziu.</p>
           <div className="mt-4 flex flex-wrap gap-3">
             <label
@@ -360,7 +360,7 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
 
         {/* Extra notes */}
         <section className="rounded-2xl border border-cream-200 bg-white p-6">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-600">Doplňujúce poznámky</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-700">Doplňujúce poznámky</p>
           <label className="mt-3 block">
             <span className="mb-1 block text-sm font-semibold text-cocoa-700">Téma, dekor, postavičky, text na tortu</span>
             <textarea
@@ -422,7 +422,7 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
       {/* Summary sidebar */}
       <aside className="sticky top-24 h-fit space-y-5 rounded-3xl border border-cream-200 bg-white p-7 shadow-sm">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Vaša torta</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Vaša torta</p>
           <h3 className="mt-1 font-display text-2xl font-semibold text-cocoa-950">Rekapitulácia</h3>
         </div>
 

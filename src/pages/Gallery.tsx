@@ -4,10 +4,12 @@ import GalleryGrid from '../components/gallery/GalleryGrid';
 import GalleryLightbox from '../components/gallery/GalleryLightbox';
 import SectionHeader from '../components/ui/SectionHeader';
 import { dataService } from '../services/dataService';
+import { useSeo } from '../hooks/useSeo';
 import { GALLERY_CATEGORIES } from '../data/sladkaFazulkaCatalog';
 import { GalleryImage } from '../types';
 
 const Gallery = () => {
+  useSeo('/galeria');
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('Všetko');
   const [loading, setLoading] = useState(true);

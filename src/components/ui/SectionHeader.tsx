@@ -22,13 +22,13 @@ const SectionHeader = ({
 }: SectionHeaderProps) => (
   <div className={align === 'center' ? 'mx-auto max-w-3xl text-center' : 'max-w-3xl'}>
     {eyebrow && (
-      <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">{eyebrow}</p>
+      <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">{eyebrow}</p>
     )}
     <h2 className="font-display text-3xl font-semibold leading-[1.1] text-cocoa-950 sm:text-4xl lg:text-[2.75rem]">
       {title}
     </h2>
     {scriptEyebrow && (
-      <p className="mt-3 font-script text-2xl text-gold-500 sm:text-3xl">{scriptEyebrow}</p>
+      <p className="mt-3 font-script text-2xl text-gold-600 sm:text-3xl">{scriptEyebrow}</p>
     )}
     {withDivider && (
       <div className="mt-5">

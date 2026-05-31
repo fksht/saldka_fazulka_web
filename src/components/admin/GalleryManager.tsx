@@ -111,7 +111,7 @@ const GalleryManager = () => {
         className={`rounded-lg border bg-white p-5 shadow-sm sm:p-7 ${editingId ? 'border-rose-300 ring-2 ring-rose-100' : 'border-cream-300'}`}
       >
         <div className="mb-4 flex items-center justify-between gap-3">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-600">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-700">
             {editingId ? 'Upraviť fotku' : 'Pridať fotku'}
           </p>
           {editingId && (

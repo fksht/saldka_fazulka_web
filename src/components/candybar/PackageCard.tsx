@@ -23,7 +23,7 @@ const PackageCard = ({ pkg, onRequest, highlight = false }: PackageCardProps) =>
     )}
 
     <div>
-      <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-gold-600">Candy bar balíček</p>
+      <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-gold-700">Candy bar balíček</p>
       <h3 className="mt-2 font-display text-2xl font-semibold leading-tight text-cocoa-950">{pkg.name}</h3>
     </div>
 
@@ -50,7 +50,7 @@ const PackageCard = ({ pkg, onRequest, highlight = false }: PackageCardProps) =>
 
     <div className="mt-6 flex items-end justify-between gap-3 border-t border-cream-200 pt-5">
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-wider text-gold-600">Cena balíčka</p>
+        <p className="text-[10px] font-bold uppercase tracking-wider text-gold-700">Cena balíčka</p>
         <p className="font-display text-3xl font-semibold leading-none text-cocoa-950">{formatCurrency(pkg.price)}</p>
       </div>
       <Button type="button" onClick={() => onRequest(pkg)}>

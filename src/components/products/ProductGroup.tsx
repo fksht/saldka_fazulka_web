@@ -58,7 +58,7 @@ const ProductGroup = ({ title, eyebrow, description, note, products, onSelect, o
       <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-3">
           {eyebrow && (
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">{eyebrow}</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">{eyebrow}</p>
           )}
           <h2 className="font-display text-3xl font-semibold leading-tight text-cocoa-950 sm:text-4xl">{title}</h2>
           <span className="block h-px w-16 bg-gradient-to-r from-gold-400 to-transparent" aria-hidden="true" />

@@ -5,12 +5,14 @@ import OrderForm from '../components/forms/OrderForm';
 import { Button, ButtonLink } from '../components/ui/Button';
 import GoldDivider from '../components/ui/GoldDivider';
 import { useCart } from '../context/CartContext';
+import { useSeo } from '../hooks/useSeo';
 import { dataService } from '../services/dataService';
 import { emailService } from '../services/emailService';
 import { OrderDraft } from '../types';
 import { formatOrderEstimatedTotal, formatOrderItemLinePrice, formatOrderItemUnitPrice } from '../utils/orderPricing';
 
 const OrderPage = () => {
+  useSeo('/objednavka');
   const { items, total, hasCustomPricing, removeItem, updateQuantity, updateNote, clearCart } = useCart();
   const [step, setStep] = useState<'cart' | 'form' | 'success'>('cart');
   const [orderId, setOrderId] = useState<string>('');
@@ -37,7 +39,7 @@ const OrderPage = () => {
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-sage-50 text-sage-700">
             <CheckCircle2 className="h-8 w-8" aria-hidden="true" />
           </div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Dopyt odoslaný</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Dopyt odoslaný</p>
           <h1 className="mt-3 font-display text-4xl font-semibold text-cocoa-950 sm:text-5xl">Ďakujem za objednávku</h1>
           <div className="mt-5">
             <GoldDivider />
@@ -62,7 +64,7 @@ const OrderPage = () => {
       <section className="relative overflow-hidden border-b border-cream-200 bg-white py-14 sm:py-20">
         <div className="watercolor-wash absolute inset-0 opacity-60" aria-hidden="true" />
         <div className="relative mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
-          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Objednávka / dopyt</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Objednávka / dopyt</p>
           <h1 className="mt-3 font-display text-4xl font-semibold leading-[1.05] text-cocoa-950 sm:text-5xl">
             Nezáväzná objednávka sladkostí
           </h1>
@@ -187,7 +189,7 @@ const OrderPage = () => {
 
                   <div className="flex flex-col justify-between gap-5 rounded-3xl border border-cream-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center">
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-gold-600">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-gold-700">
                         {hasCustomPricing ? 'Predpokladaná suma' : 'Celková suma'}
                       </p>
                       <p className="mt-1 font-display text-4xl font-semibold text-cocoa-950">

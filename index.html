@@ -3,10 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sladká fazuľka | Candy bary, zákusky a torty na mieru — Košice</title>
   <meta
     name="description"
-    content="Sladká fazuľka — ručne pečené candy bary, mini zákusky, fazuľkové špeciality a torty na mieru. Košice. Nezáväzná objednávka a galéria prác."
+    content="Sladká fazuľka — domáca cukrárska dielňa v Košiciach. Ručne pečené candy bary, mini zákusky, fazuľkové špeciality, svadobné výslužky a torty na mieru. Vegan a bezlepkové alternatívy. Nezáväzná objednávka."
   />
+  <meta name="keywords" content="Sladká fazuľka, sladkafazulka, Zuzana Opálková, cukráreň Košice, torty na mieru Košice, candy bar Košice, svadobné výslužky, zákusky Košice, vegan zákusky, bezlepkové torty" />
+  <meta name="author" content="Zuzana Opálková — Sladká fazuľka" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://sladkafazulka.sk/" />
+  <meta name="theme-color" content="#442e28" />
+
+  <!-- Open Graph / social + search previews -->
+  <meta property="og:site_name" content="Sladká fazuľka" />
   <meta property="og:title" content="Sladká fazuľka — candy bary, zákusky a torty na mieru" />
   <meta
     property="og:description"
@@ -14,11 +23,75 @@
   />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="sk_SK" />
-  <meta name="theme-color" content="#442e28" />
+  <meta property="og:url" content="https://sladkafazulka.sk/" />
+  <meta property="og:image" content="https://sladkafazulka.sk/images/sladka-fazulka/og-cover.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Svadobný candy bar Sladká fazuľka so zákuskami a tortou" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sladká fazuľka — candy bary, zákusky a torty na mieru" />
+  <meta name="twitter:description" content="Domáca cukrárska dielňa v Košiciach. Torty na mieru, candy bary, svadobné výslužky." />
+  <meta name="twitter:image" content="https://sladkafazulka.sk/images/sladka-fazulka/og-cover.jpg" />
+
   <link rel="icon" href="%BASE_URL%favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" href="%BASE_URL%favicon.png" />
   <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
-  <title>Sladká fazuľka | Candy bary, zákusky a torty na mieru</title>
+
+  <!-- Fonts: discovered early + parallel to the JS/CSS bundle (was a render-blocking @import in CSS) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700;800&family=Caveat:wght@500;700&family=Playfair+Display:ital,wght@0,600;0,700;1,700&display=swap"
+  />
+
+  <!-- Structured data: local bakery + brand + founder, so brand and name searches resolve to this site -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Bakery",
+    "@id": "https://sladkafazulka.sk/#business",
+    "name": "Sladká fazuľka",
+    "alternateName": ["Sladka fazulka", "Sladká Fazuľka"],
+    "description": "Domáca cukrárska dielňa v Košiciach — ručne pečené candy bary, mini zákusky, fazuľkové špeciality, svadobné výslužky a torty na mieru. Vegan a bezlepkové alternatívy.",
+    "url": "https://sladkafazulka.sk/",
+    "image": "https://sladkafazulka.sk/images/sladka-fazulka/og-cover.jpg",
+    "logo": "https://sladkafazulka.sk/images/sladka-fazulka/logo-on-cream.jpg",
+    "telephone": "+421911410544",
+    "email": "sladkafazulka@gmail.com",
+    "priceRange": "€€",
+    "servesCuisine": ["Dezerty", "Torty", "Zákusky", "Vegan", "Bezlepkové"],
+    "areaServed": [
+      { "@type": "City", "name": "Košice" },
+      { "@type": "AdministrativeArea", "name": "Košický kraj" }
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Košice",
+      "addressRegion": "Košický kraj",
+      "addressCountry": "SK"
+    },
+    "founder": {
+      "@type": "Person",
+      "name": "Zuzana Opálková"
+    },
+    "sameAs": [
+      "https://www.instagram.com/sladkafazulka",
+      "https://www.facebook.com/sladkafazulka"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://sladkafazulka.sk/#website",
+    "url": "https://sladkafazulka.sk/",
+    "name": "Sladká fazuľka",
+    "inLanguage": "sk-SK",
+    "publisher": { "@id": "https://sladkafazulka.sk/#business" }
+  }
+  </script>
   <script>
     (function (locationRef) {
       if (locationRef.search[1] === '/') {

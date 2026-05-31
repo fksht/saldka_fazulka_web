@@ -4,10 +4,12 @@ import CakeConfigurator from '../components/cake/CakeConfigurator';
 import GoldDivider from '../components/ui/GoldDivider';
 import Toast from '../components/ui/Toast';
 import { useCart } from '../context/CartContext';
+import { useSeo } from '../hooks/useSeo';
 import { CakeConfiguration } from '../types';
 import { SECTION_IMAGES } from '../data/sladkaFazulkaCatalog';
 
 const Cake = () => {
+  useSeo('/torty-na-mieru');
   const navigate = useNavigate();
   const { addCustomCake } = useCart();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -23,7 +25,7 @@ const Cake = () => {
         <div className="watercolor-wash absolute inset-0" aria-hidden="true" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Torty na mieru</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Torty na mieru</p>
             <h1 className="mt-3 font-display text-4xl font-semibold leading-[1.05] text-cocoa-950 sm:text-5xl lg:text-6xl">
               Vyskladajte si tortu krok za krokom
             </h1>

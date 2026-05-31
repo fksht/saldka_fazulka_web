@@ -1,0 +1,56 @@
+{
+  "siteUrl": "https://sladkafazulka.sk",
+  "defaultTitle": "Sladká fazuľka | Candy bary, zákusky a torty na mieru — Košice",
+  "pages": [
+    {
+      "path": "/",
+      "title": "Sladká fazuľka | Candy bary, zákusky a torty na mieru — Košice",
+      "description": "Sladká fazuľka — domáca cukrárska dielňa v Košiciach. Ručne pečené candy bary, mini zákusky, fazuľkové špeciality, svadobné výslužky a torty na mieru. Vegan a bezlepkové alternatívy."
+    },
+    {
+      "path": "/o-mne",
+      "title": "O mne — Zuzana Opálková | Sladká fazuľka Košice",
+      "description": "Za Sladkou fazuľkou stojí Zuzana Opálková — domáca cukrárka z Košíc. Ručná výroba zákuskov, tort na mieru a candy barov s dôrazom na chuť, kvalitu a osobný prístup."
+    },
+    {
+      "path": "/ponuka",
+      "title": "Ponuka zákuskov a fazuľkových špecialít | Sladká fazuľka",
+      "description": "Prehľadná ponuka Sladkej fazuľky: mini zákusky, tartaletky, poháriky, rezy, fazuľkové brownie a špeciality. Ručná výroba v Košiciach, vegan a bezlepkové alternatívy."
+    },
+    {
+      "path": "/torty-na-mieru",
+      "title": "Torty na mieru Košice | Sladká fazuľka",
+      "description": "Torty na mieru z Košíc — vyskladajte si korpus, krémy a veľkosť cez konfigurátor. Svadobné, narodeninové a detské torty od Sladkej fazuľky, aj v bezlepkovej verzii."
+    },
+    {
+      "path": "/candy-bar",
+      "title": "Candy bar balíčky pre 20 – 150 hostí | Sladká fazuľka Košice",
+      "description": "Candy bar na svadbu či oslavu v Košiciach. 7 hotových balíčkov od Mini po Exclusive Plus, kompletný servis: doprava, aranžovanie a podnosy. Sladká fazuľka."
+    },
+    {
+      "path": "/svadobne-vysluzky",
+      "title": "Svadobné výslužky a boxy | Sladká fazuľka Košice",
+      "description": "Svadobné výslužky a darčekové boxy so zákuskami a mini dezertmi od Sladkej fazuľky v Košiciach. Ručná výroba, na mieru pre vašu udalosť."
+    },
+    {
+      "path": "/ochutnavkovy-box",
+      "title": "Ochutnávkový box zákuskov | Sladká fazuľka Košice",
+      "description": "Ochutnávkový box od Sladkej fazuľky — vyberte si zostavu mini zákuskov a špecialít a ochutnajte ešte pred veľkou objednávkou. Košice a okolie."
+    },
+    {
+      "path": "/galeria",
+      "title": "Galéria tort, candy barov a zákuskov | Sladká fazuľka",
+      "description": "Galéria prác Sladkej fazuľky — torty na mieru, svadobné candy bary, výslužky a mini zákusky. Inšpirácia na vašu oslavu, svadbu či výnimočnú príležitosť v Košiciach."
+    },
+    {
+      "path": "/objednavka",
+      "title": "Nezáväzná objednávka | Sladká fazuľka Košice",
+      "description": "Pošlite Sladkej fazuľke nezáväzný dopyt — termín, počet hostí, alergie a poznámku k dekoru. Finálne potvrdenie prebieha osobne, bez platby vopred."
+    },
+    {
+      "path": "/kontakt",
+      "title": "Kontakt | Sladká fazuľka — cukráreň Košice",
+      "description": "Kontakt na Sladkú fazuľku — domácu cukrársku dielňu v Košiciach. Napíšte alebo zavolajte a rezervujte si termín na torty na mieru, candy bar či výslužky."
+    }
+  ]
+}

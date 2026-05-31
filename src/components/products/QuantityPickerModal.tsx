@@ -77,7 +77,7 @@ const QuantityPickerModal = ({ product, onClose, onConfirm }: QuantityPickerModa
       >
         <div className="watercolor-wash relative flex items-start justify-between gap-3 border-b border-cream-200 px-5 py-4">
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold-600">Pridať do dopytu</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold-700">Pridať do dopytu</p>
             <h3 className="mt-1 font-display text-lg font-semibold leading-tight text-cocoa-950 sm:text-xl">
               {product.name}
             </h3>

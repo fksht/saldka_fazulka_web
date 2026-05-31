@@ -13,8 +13,8 @@ const Footer = () => (
               src={SECTION_IMAGES.logo}
               alt="Sladká fazuľka"
               className="h-14 w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]"
-              width={112}
-              height={82}
+              width={240}
+              height={151}
             />
             <span className="font-display text-2xl font-semibold italic text-white">Sladká fazuľka</span>
           </Link>
@@ -23,6 +23,7 @@ const Footer = () => (
             Ručná výroba pre svadby, oslavy a výnimočné príležitosti — s dôrazom na chuť a detail.
           </p>
           <p className="mt-4 text-[11px] uppercase tracking-[0.28em] text-gold-300">Domáca dielňa · Košice</p>
+          <p className="mt-1 text-xs text-cream-300">Autorka: Zuzana Opálková</p>
         </div>
 
         <div>

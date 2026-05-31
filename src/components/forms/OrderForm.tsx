@@ -128,7 +128,7 @@ const OrderForm = ({ items, total, onSubmit, onCancel }: OrderFormProps) => {
     <form onSubmit={handleSubmit(handleFormSubmit)} className="grid gap-8 lg:grid-cols-[1fr_0.86fr]">
       <div className="rounded-2xl border border-cream-200 bg-white p-5 shadow-sm sm:p-7">
         <div className="mb-6">
-          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Nezáväzná objednávka</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Nezáväzná objednávka</p>
           <h2 className="mt-2 font-display text-3xl font-semibold leading-tight text-cocoa-950">Kontaktné údaje a vaša predstava</h2>
           <p className="mt-3 text-sm leading-6 text-cocoa-600">
             Po odoslaní vám príde rekapitulácia na email. Objednávka je potvrdená až po našej vzájomnej dohode.

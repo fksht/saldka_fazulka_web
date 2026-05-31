@@ -3,6 +3,7 @@ import { ButtonLink } from '../components/ui/Button';
 import GoldDivider from '../components/ui/GoldDivider';
 import SectionHeader from '../components/ui/SectionHeader';
 import { CONTACT_INFO } from '../services/mockData';
+import { useSeo } from '../hooks/useSeo';
 
 const contactCardClass =
   'group rounded-3xl border border-cream-200 bg-cream-50 p-7 transition hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-50 hover:shadow-md';
@@ -20,7 +21,9 @@ const emailContent = (
   </>
 );
 
-const Contact = () => (
+const Contact = () => {
+  useSeo('/kontakt');
+  return (
   <main className="bg-cream-50">
     <section className="relative overflow-hidden bg-white py-16 sm:py-20">
       <div className="watercolor-wash absolute inset-0 opacity-60" aria-hidden="true" />
@@ -88,7 +91,7 @@ const Contact = () => (
     <section className="py-16 sm:py-20">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_0.8fr] lg:px-8">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Ako objednať</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Ako objednať</p>
           <h2 className="mt-3 font-display text-4xl font-semibold leading-[1.1] text-cocoa-950 sm:text-5xl">
             Najrýchlejšie je poslať dopyt cez formulár
           </h2>
@@ -116,6 +119,7 @@ const Contact = () => (
       </div>
     </section>
   </main>
-);
+  );
+};
 
 export default Contact;

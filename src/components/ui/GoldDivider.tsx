@@ -18,10 +18,10 @@ const GoldDivider = ({ label, align = 'center', icon = 'heart', className = '' }
   const justify = align === 'center' ? 'justify-center' : 'justify-start';
 
   return (
-    <div className={`flex items-center gap-3 text-gold-500 ${justify} ${className}`} aria-hidden={!label}>
+    <div className={`flex items-center gap-3 text-gold-600 ${justify} ${className}`} aria-hidden={!label}>
       <span className="h-px w-12 bg-gradient-to-r from-transparent via-gold-300 to-gold-400" />
       {label ? (
-        <span className="font-script text-lg leading-none text-gold-500 sm:text-xl">{label}</span>
+        <span className="font-script text-lg leading-none text-gold-600 sm:text-xl">{label}</span>
       ) : (
         Icon
       )}

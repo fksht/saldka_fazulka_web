@@ -61,7 +61,7 @@ const ProductModal = ({ product, onClose, onAddToCart }: ProductModalProps) => {
               <X className="h-5 w-5" aria-hidden="true" />
             </button>
 
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-600">{product.category}</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-700">{product.category}</p>
             <h3 className="mt-3 pr-10 font-display text-3xl font-semibold text-cocoa-950">{product.name}</h3>
             <p className="mt-3 font-display text-2xl font-semibold text-cocoa-800">
               {formatPrice(product.price, product.priceType, product.unitLabel)}

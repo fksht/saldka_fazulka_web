@@ -8,6 +8,7 @@ import GoldDivider from '../components/ui/GoldDivider';
 import SectionHeader from '../components/ui/SectionHeader';
 import Toast from '../components/ui/Toast';
 import { useCart } from '../context/CartContext';
+import { useSeo } from '../hooks/useSeo';
 import { dataService } from '../services/dataService';
 import { ALLERGENS, ALLERGEN_DISCLAIMER, CATEGORY_ORDER } from '../data/sladkaFazulkaCatalog';
 import { Category, Product } from '../types';
@@ -77,6 +78,7 @@ const MENU_CATEGORIES: Array<{
 ];
 
 const Menu = () => {
+  useSeo('/ponuka');
   const navigate = useNavigate();
   const { addProduct } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
@@ -158,7 +160,7 @@ const Menu = () => {
               onClick={() => setLegendOpen(true)}
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-gold-200 bg-cream-50 px-5 py-2.5 text-sm font-semibold text-cocoa-700 transition hover:border-rose-300 hover:bg-rose-50"
             >
-              <Info className="h-4 w-4 text-gold-600" aria-hidden="true" />
+              <Info className="h-4 w-4 text-gold-700" aria-hidden="true" />
               Legenda alergénov
             </button>
           </div>
@@ -239,7 +241,7 @@ const Menu = () => {
             <div className="watercolor-wash relative flex-none border-b border-cream-200 px-5 py-4 sm:px-7 sm:py-5">
               <div className="relative flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold-600">Zoznam alergénov</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold-700">Zoznam alergénov</p>
                   <h3 className="mt-1.5 font-display text-xl font-semibold text-cocoa-950 sm:text-2xl">Smernica 1169/2011 EÚ</h3>
                   <div className="mt-2">
                     <GoldDivider align="left" />

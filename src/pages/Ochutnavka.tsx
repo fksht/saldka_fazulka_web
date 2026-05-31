@@ -7,11 +7,13 @@ import Toast from '../components/ui/Toast';
 import TastingBoxModal from '../components/order/TastingBoxModal';
 import { Button, ButtonLink } from '../components/ui/Button';
 import { useCart } from '../context/CartContext';
+import { useSeo } from '../hooks/useSeo';
 import { SECTION_IMAGES, TASTING_BOXES } from '../data/sladkaFazulkaCatalog';
 import { TastingBox, TastingDetails } from '../types';
 import { formatPrice } from '../utils/format';
 
 const Ochutnavka = () => {
+  useSeo('/ochutnavkovy-box');
   const navigate = useNavigate();
   const { addTastingBox } = useCart();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -32,7 +34,7 @@ const Ochutnavka = () => {
         <div className="watercolor-wash absolute inset-0" aria-hidden="true" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Ochutnávkový box</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Ochutnávkový box</p>
             <h1 className="mt-3 font-display text-4xl font-semibold leading-[1.05] text-cocoa-950 sm:text-5xl lg:text-6xl">
               Ochutnajte. Rozhodnite sa. Zamilujte sa.
             </h1>
@@ -74,7 +76,7 @@ const Ochutnavka = () => {
                 <h3 className="font-display text-2xl font-semibold leading-tight text-cocoa-950">{tasting.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-cocoa-600">{tasting.description}</p>
                 <div className="mt-4 border-t border-dashed border-cream-200 pt-4">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-gold-600">Cena</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-gold-700">Cena</p>
                   <p className="mt-1 font-display text-3xl font-semibold text-cocoa-950">
                     {formatPrice(tasting.price, tasting.priceType)}
                   </p>
@@ -93,7 +95,7 @@ const Ochutnavka = () => {
           </div>
 
           <div className="mt-12 rounded-3xl border border-gold-200 bg-cream-50 p-7 sm:p-10">
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Plánujete svadbu?</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Plánujete svadbu?</p>
             <h3 className="mt-2 font-display text-2xl font-semibold text-cocoa-950 sm:text-3xl">
               Ochutnávka uľahčí výber zákuskov pre candy bar aj tortu
             </h3>

@@ -914,6 +914,7 @@ export const GALLERY_CATEGORIES = ['Mini zákusky', 'Candy bar', 'Torty na mieru
 // === HOME / SECTION IMAGES ===
 export const SECTION_IMAGES = {
   hero: sectionImage('hero-cover.jpg'),
+  heroWebp: sectionImage('hero-cover.webp'),
   cake3tier: sectionImage('cake-3tier.jpg'),
   zakusky: sectionImage('section-zakusky.jpg'),
   candyBar: sectionImage('section-candy-bar.jpg'),

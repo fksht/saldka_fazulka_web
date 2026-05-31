@@ -19,6 +19,7 @@ import GoldDivider from '../components/ui/GoldDivider';
 import SectionHeader from '../components/ui/SectionHeader';
 import Toast from '../components/ui/Toast';
 import { useCart } from '../context/CartContext';
+import { useSeo } from '../hooks/useSeo';
 import { CONTACT_INFO } from '../services/mockData';
 import { dataService } from '../services/dataService';
 import { SECTION_IMAGES } from '../data/sladkaFazulkaCatalog';
@@ -67,6 +68,7 @@ const faqs = [
 ];
 
 const Home = () => {
+  useSeo('/');
   const navigate = useNavigate();
   const { addProduct } = useCart();
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -108,7 +110,7 @@ const Home = () => {
         <div className="watercolor-wash absolute inset-0" aria-hidden="true" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:px-8 lg:py-24">
           <div>
-            <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-gold-200 bg-cream-50/80 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600 backdrop-blur">
+            <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-gold-200 bg-cream-50/80 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700 backdrop-blur">
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
               Domáca cukrárska dielňa · Košice
             </p>
@@ -118,7 +120,7 @@ const Home = () => {
             <div className="mt-4">
               <GoldDivider align="left" />
             </div>
-            <p className="mt-4 font-script text-3xl leading-tight text-gold-500 sm:text-4xl">
+            <p className="mt-4 font-script text-3xl leading-tight text-gold-600 sm:text-4xl">
               Candy bary, zákusky a torty na mieru
             </p>
             <p className="mt-6 max-w-xl text-lg leading-8 text-cocoa-700">
@@ -136,11 +138,18 @@ const Home = () => {
           </div>
           <div className="relative">
             <div className="absolute -inset-6 -z-10 rounded-[2.5rem] bg-rose-100/40 blur-3xl" aria-hidden="true" />
-            <img
-              src={SECTION_IMAGES.hero}
-              alt="Svadobný candy bar so zákuskami, mini dezertami a dvojposchodovou tortou"
-              className="mx-auto w-full max-w-md rounded-3xl object-cover shadow-xl ring-1 ring-cream-200 lg:max-w-none"
-            />
+            <picture>
+              <source srcSet={SECTION_IMAGES.heroWebp} type="image/webp" />
+              <img
+                src={SECTION_IMAGES.hero}
+                alt="Svadobný candy bar so zákuskami, mini dezertami a dvojposchodovou tortou"
+                width={900}
+                height={1200}
+                fetchPriority="high"
+                decoding="async"
+                className="mx-auto w-full max-w-md rounded-3xl object-cover shadow-xl ring-1 ring-cream-200 lg:max-w-none"
+              />
+            </picture>
           </div>
         </div>
       </section>
@@ -194,7 +203,7 @@ const Home = () => {
         <div className="watercolor-wash absolute inset-0 opacity-60" aria-hidden="true" />
         <div className="relative mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
           <article className="group relative overflow-hidden rounded-3xl border border-cream-200 bg-cream-50 p-8 transition hover:border-gold-200 hover:shadow-lg sm:p-10">
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Torty na mieru</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Torty na mieru</p>
             <h2 className="mt-3 font-display text-3xl font-semibold leading-tight text-cocoa-950 sm:text-4xl">
               Vyskladajte si tortu krok za krokom
             </h2>
@@ -207,7 +216,7 @@ const Home = () => {
             </ButtonLink>
           </article>
           <article className="group relative overflow-hidden rounded-3xl border border-cream-200 bg-cream-50 p-8 transition hover:border-gold-200 hover:shadow-lg sm:p-10">
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Candy bar balíčky</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Candy bar balíčky</p>
             <h2 className="mt-3 font-display text-3xl font-semibold leading-tight text-cocoa-950 sm:text-4xl">
               Sladký servis na mieru
             </h2>
@@ -242,7 +251,7 @@ const Home = () => {
                   <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-cocoa-800 text-white">
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </div>
-                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-gold-600">Krok {index + 1}</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-gold-700">Krok {index + 1}</p>
                   <h3 className="mt-2 font-display text-lg font-semibold text-cocoa-950">{item.title}</h3>
                   <p className="mt-2 text-sm leading-6 text-cocoa-600">{item.text}</p>
                 </div>
@@ -276,7 +285,7 @@ const Home = () => {
       <section className="py-16">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-6 rounded-3xl border border-cream-200 bg-cream-50 px-6 py-10 sm:px-10 md:flex-row md:items-center lg:mx-auto">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-600">Kontakt</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-700">Kontakt</p>
             <h2 className="mt-2 font-display text-3xl font-semibold text-cocoa-950">
               Najlepšie je rezervovať termín vopred
             </h2>

@@ -27,12 +27,12 @@ const Navbar = () => {
             src={SECTION_IMAGES.logo}
             alt="Sladká fazuľka — logo"
             className="h-11 w-auto"
-            width={88}
-            height={64}
+            width={240}
+            height={151}
           />
           <span className="hidden flex-col sm:flex">
             <span className="font-display text-xl font-semibold italic text-cocoa-950">Sladká fazuľka</span>
-            <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.28em] text-gold-500">Candy bary · zákusky · torty</span>
+            <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.28em] text-gold-600">Candy bary · zákusky · torty</span>
           </span>
         </Link>
 
