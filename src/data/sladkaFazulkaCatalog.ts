@@ -18,6 +18,22 @@ const PRODUCT_TIMESTAMP = '2026-05-28T12:00:00.000Z';
 const BASE_URL = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
 export const assetPath = (relativePath: string) => `${BASE_URL}/${relativePath.replace(/^\//, '')}`;
 
+// Re-root a stored asset path to the current base. Self-heals image URLs that
+// were persisted (e.g. in Supabase) with a stale base prefix — such as an old
+// GitHub project-pages "/repo-name/" prefix — so they resolve on the live
+// domain. Absolute and data: URLs (e.g. Supabase Storage uploads) pass through
+// unchanged.
+export function normalizeAssetUrl(url: string): string;
+export function normalizeAssetUrl(url: string | undefined): string | undefined;
+export function normalizeAssetUrl(url: string | undefined): string | undefined {
+  if (!url) return url;
+  if (/^(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(url) || url.startsWith('data:')) return url;
+  const marker = 'images/sladka-fazulka/';
+  const idx = url.indexOf(marker);
+  if (idx === -1) return url;
+  return assetPath(url.slice(idx));
+}
+
 const productImage = (filename: string) => assetPath(`images/sladka-fazulka/products/${filename}`);
 const sectionImage = (filename: string) => assetPath(`images/sladka-fazulka/${filename}`);
 const galleryImage = (filename: string) => assetPath(`images/sladka-fazulka/gallery/${filename}`);

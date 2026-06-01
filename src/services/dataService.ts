@@ -11,7 +11,26 @@ import {
 } from '../types';
 import { MOCK_CANDY_BAR_PACKAGES, MOCK_GALLERY, MOCK_PRODUCTS } from './mockData';
 import { getOrderPricingSummary } from '../utils/orderPricing';
+import { normalizeAssetUrl } from '../data/sladkaFazulkaCatalog';
 import { supabase } from './supabaseClient';
+
+// Self-heal image paths read from the backend so a stale base prefix can't
+// break rendering (see normalizeAssetUrl).
+const normalizeProductAssets = (product: Product): Product => ({
+  ...product,
+  imageUrl: normalizeAssetUrl(product.imageUrl),
+  galleryImages: product.galleryImages?.map((url) => normalizeAssetUrl(url)),
+});
+
+const normalizeGalleryAssets = (image: GalleryImage): GalleryImage => ({
+  ...image,
+  imageUrl: normalizeAssetUrl(image.imageUrl),
+});
+
+const normalizePackageAssets = (pkg: CandyBarPackage): CandyBarPackage => ({
+  ...pkg,
+  imageUrl: normalizeAssetUrl(pkg.imageUrl),
+});
 
 const PRODUCT_STORAGE_KEY = 'sladka-fazulka.products.v1';
 const ORDER_STORAGE_KEY = 'sladka-fazulka.orders.v1';
@@ -379,7 +398,7 @@ class SupabaseDataService implements DataApi {
       .order('position', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: true });
     if (error) this.fail('Načítanie produktov zlyhalo', error);
-    return (data ?? []).map((row) => (row as { data: Product }).data);
+    return (data ?? []).map((row) => normalizeProductAssets((row as { data: Product }).data));
   }
 
   async getAvailableProducts(): Promise<Product[]> {
@@ -393,12 +412,14 @@ class SupabaseDataService implements DataApi {
   async getProductBySlug(slug: string): Promise<Product | undefined> {
     const { data, error } = await this.db.from('products').select('data').eq('slug', slug).limit(1);
     if (error) this.fail('Načítanie produktu zlyhalo', error);
-    return (data?.[0] as { data: Product } | undefined)?.data;
+    const product = (data?.[0] as { data: Product } | undefined)?.data;
+    return product ? normalizeProductAssets(product) : undefined;
   }
 
   private async productById(id: string): Promise<Product | undefined> {
     const { data } = await this.db.from('products').select('data').eq('id', id).limit(1);
-    return (data?.[0] as { data: Product } | undefined)?.data;
+    const product = (data?.[0] as { data: Product } | undefined)?.data;
+    return product ? normalizeProductAssets(product) : undefined;
   }
 
   async addProduct(product: ProductFormValues): Promise<Product> {
@@ -501,7 +522,7 @@ class SupabaseDataService implements DataApi {
       .select('data')
       .order('position', { ascending: true, nullsFirst: false });
     if (error) this.fail('Načítanie balíčkov zlyhalo', error);
-    return (data ?? []).map((row) => (row as { data: CandyBarPackage }).data);
+    return (data ?? []).map((row) => normalizePackageAssets((row as { data: CandyBarPackage }).data));
   }
 
   async updateCandyBarPackage(
@@ -543,7 +564,7 @@ class SupabaseDataService implements DataApi {
       .order('position', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false });
     if (error) this.fail('Načítanie galérie zlyhalo', error);
-    return (data ?? []).map((row) => (row as { data: GalleryImage }).data);
+    return (data ?? []).map((row) => normalizeGalleryAssets((row as { data: GalleryImage }).data));
   }
 
   async addGalleryImage(image: GalleryImageDraft): Promise<GalleryImage> {
