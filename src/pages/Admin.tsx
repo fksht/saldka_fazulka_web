@@ -75,7 +75,7 @@ const AdminPage = () => {
       const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       setLoggingIn(false);
       if (error) {
-        setLoginError('Prihlásenie zlyhalo. Skontrolujte email a heslo.');
+        setLoginError('Prihlásenie zlyhalo. Skontroluj email a heslo.');
         return;
       }
       // onAuthStateChange flips isLoggedIn.
@@ -83,7 +83,7 @@ const AdminPage = () => {
     }
 
     if (!adminPassword) {
-      setLoginError('Prístup ešte nie je pripravený. Skontrolujte nastavenie hesla.');
+      setLoginError('Prístup ešte nie je pripravený. Skontroluj nastavenie hesla.');
       return;
     }
     if (password === adminPassword) {
@@ -91,7 +91,7 @@ const AdminPage = () => {
       setIsLoggedIn(true);
       return;
     }
-    setLoginError('Heslo nesedí. Skúste ho skontrolovať.');
+    setLoginError('Heslo nesedí. Skús ho skontrolovať.');
   };
 
   const handleLogout = async () => {
@@ -189,7 +189,7 @@ const AdminPage = () => {
               </label>
               {loginDisabled && (
                 <p className="rounded-lg bg-amber-50 p-3 text-sm font-semibold text-amber-800">
-                  Prístup ešte nie je pripravený. Skontrolujte nastavenie hesla.
+                  Prístup ešte nie je pripravený. Skontroluj nastavenie hesla.
                 </p>
               )}
               {loginError && <p className="rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{loginError}</p>}

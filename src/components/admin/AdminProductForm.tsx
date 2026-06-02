@@ -158,7 +158,7 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
     event.preventDefault();
 
     if (requiresNumericPrice && (values.price === null || !Number.isFinite(values.price) || values.price <= 0)) {
-      setFormError('Pri fixnej cene alebo cene od zadajte platnú cenu vyššiu ako 0 €.');
+      setFormError('Pri fixnej cene alebo cene od zadaj platnú cenu vyššiu ako 0 €.');
       return;
     }
 
@@ -198,7 +198,7 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
         variantLabel: undefined,
       });
     } catch {
-      setFormError('Produkt sa nepodarilo uložiť. Skontrolujte údaje a skúste to znova.');
+      setFormError('Produkt sa nepodarilo uložiť. Skontroluj údaje a skús to znova.');
     } finally {
       setIsSaving(false);
     }
@@ -369,7 +369,7 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
               <div>
                 <p className="text-sm font-semibold text-cocoa-700">Možnosti výberu (varianty, príchute…)</p>
                 <p className="mt-0.5 text-xs text-cocoa-500">
-                  Voliteľné. Pridajte jednu alebo viac skupín (napr. Variant, Príchuť). Pri každej možnosti môžete zadať
+                  Voliteľné. Pridaj jednu alebo viac skupín (napr. Variant, Príchuť). Pri každej možnosti môžeš zadať
                   zmenu ceny (napr. +0,30 pre vegánsku). Max {MAX_OPTION_GROUPS} skupiny, {MAX_CHOICES_PER_GROUP}{' '}
                   možností v skupine.
                 </p>
@@ -457,7 +457,7 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
                   </div>
                 ))}
                 <p className="text-xs text-cocoa-500">
-                  Zmena ceny sa pripočíta k základnej cene. Zápornú hodnotu (napr. -0.20) použite pre zľavu.
+                  Zmena ceny sa pripočíta k základnej cene. Zápornú hodnotu (napr. -0.20) použi pre zľavu.
                 </p>
               </div>
             ) : (

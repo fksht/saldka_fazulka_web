@@ -16,8 +16,8 @@ type PackageFormState = {
 };
 
 const packageSchema = z.object({
-  name: z.string().trim().min(2, 'Zadajte názov balíčka'),
-  guestCount: z.string().trim().min(2, 'Zadajte počet hostí'),
+  name: z.string().trim().min(2, 'Zadaj názov balíčka'),
+  guestCount: z.string().trim().min(2, 'Zadaj počet hostí'),
   totalPieces: z.coerce.number().int('Počet kusov musí byť celé číslo').positive('Počet kusov musí byť vyšší ako 0'),
   dessertTypeCount: z.coerce.number().int('Počet druhov musí byť celé číslo').positive('Počet druhov musí byť vyšší ako 0'),
   price: z.coerce.number().positive('Cena musí byť vyššia ako 0'),
@@ -114,7 +114,7 @@ const PackageManager = () => {
     const parsed = packageSchema.safeParse(formState);
     const composition = parseComposition(formState.compositionText);
     if (!parsed.success || composition.length === 0) {
-      setFormError('Skontrolujte údaje balíčka a zloženie vo formáte „názov | množstvo".');
+      setFormError('Skontroluj údaje balíčka a zloženie vo formáte „názov | množstvo".');
       return;
     }
 
@@ -140,7 +140,7 @@ const PackageManager = () => {
       closeForm();
       await fetchPackages();
     } catch {
-      setFormError('Balíček sa nepodarilo uložiť. Skúste to prosím znova.');
+      setFormError('Balíček sa nepodarilo uložiť. Skús to prosím znova.');
     } finally {
       setIsSaving(false);
     }
