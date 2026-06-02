@@ -187,10 +187,16 @@ const OrderDashboard = () => {
                     {items.map((item) => (
                       <p key={item.productId}>
                         {item.quantity}x {item.productName}
-                        {item.variant && (
+                        {item.selectedOptions && item.selectedOptions.length > 0 ? (
                           <span className="text-rose-700">
-                            {' '}— {item.variantLabel ? `${item.variantLabel}: ` : ''}{item.variant}
+                            {' '}— {item.selectedOptions.map((option) => `${option.label}: ${option.value}`).join(' · ')}
                           </span>
+                        ) : (
+                          item.variant && (
+                            <span className="text-rose-700">
+                              {' '}— {item.variantLabel ? `${item.variantLabel}: ` : ''}{item.variant}
+                            </span>
+                          )
                         )}
                       </p>
                     ))}

@@ -1,14 +1,15 @@
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
-import { CakeConfiguration, CandyBarPackage, OrderItem, Product, TastingBox, TastingDetails, WeddingBox } from '../types';
+import { CakeConfiguration, CandyBarPackage, OrderItem, Product, SelectedOption, TastingBox, TastingDetails, WeddingBox } from '../types';
 import { CANDY_BAR_PACKAGES, PRODUCTS, SECTION_IMAGES, WEDDING_BOXES } from '../data/sladkaFazulkaCatalog';
 import { getOrderPricingSummary } from '../utils/orderPricing';
+import { formatSelectedOptions, getEffectiveUnitPrice } from '../utils/productOptions';
 
 type CartContextValue = {
   items: OrderItem[];
   total: number;
   hasCustomPricing: boolean;
   itemCount: number;
-  addProduct: (product: Product, quantity?: number, variant?: string) => void;
+  addProduct: (product: Product, quantity?: number, selectedOptions?: SelectedOption[]) => void;
   addPackage: (pkg: CandyBarPackage) => void;
   addWeddingBox: (box: WeddingBox) => void;
   addTastingBox: (tasting: TastingBox, details?: TastingDetails) => void;
@@ -76,10 +77,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const addProduct = useCallback(
-    (product: Product, quantity?: number, variant?: string) => {
+    (product: Product, quantity?: number, selectedOptions?: SelectedOption[]) => {
       const min = product.minimumOrderQuantity ?? 1;
       const requested = quantity && quantity > 0 ? quantity : min;
-      const lineId = variant ? `${product.id}::${variant}` : product.id;
+      const options = selectedOptions ?? [];
+      const optionKey = options.map((option) => `${option.label}=${option.value}`).join('|');
+      const lineId = optionKey ? `${product.id}::${optionKey}` : product.id;
+      const unitPrice = getEffectiveUnitPrice(product.price, options);
       commit((current) => {
         const existing = current.find((item) => item.productId === lineId);
         if (existing) {
@@ -95,13 +99,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             productName: product.name,
             quantity: Math.max(min, requested),
             minimumOrderQuantity: product.minimumOrderQuantity,
-            unitPrice: product.price,
+            unitPrice,
             priceType: product.priceType,
             kind: 'product',
             unitLabel: product.unitLabel,
             imageUrl: product.imageUrl,
-            variant,
-            variantLabel: variant ? product.variantLabel : undefined,
+            selectedOptions: options.length > 0 ? options : undefined,
+            variant: options.length > 0 ? formatSelectedOptions(options) : undefined,
           },
         ];
       });

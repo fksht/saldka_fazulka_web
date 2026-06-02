@@ -11,7 +11,8 @@ import { useCart } from '../context/CartContext';
 import { useSeo } from '../hooks/useSeo';
 import { dataService } from '../services/dataService';
 import { ALLERGENS, ALLERGEN_DISCLAIMER, CATEGORY_ORDER } from '../data/sladkaFazulkaCatalog';
-import { Category, Product } from '../types';
+import { Category, Product, SelectedOption } from '../types';
+import { productNeedsPicker } from '../utils/productOptions';
 
 const MENU_CATEGORIES: Array<{
   category: Category;
@@ -112,11 +113,8 @@ const Menu = () => {
     });
   }, [products, searchQuery]);
 
-  const needsPicker = (product: Product) =>
-    (product.minimumOrderQuantity ?? 1) > 1 || (product.variants?.length ?? 0) >= 2;
-
   const handleAddToCart = (product: Product) => {
-    if (needsPicker(product)) {
+    if (productNeedsPicker(product)) {
       setPickerProduct(product);
       return;
     }
@@ -124,10 +122,10 @@ const Menu = () => {
     setToastMessage(`${product.name} je pridané do dopytu.`);
   };
 
-  const handlePickerConfirm = (product: Product, quantity: number, variant?: string) => {
-    addProduct(product, quantity, variant);
-    const variantSuffix = variant ? ` — ${variant}` : '';
-    setToastMessage(`${product.name}${variantSuffix} (${quantity} ks) je pridané do dopytu.`);
+  const handlePickerConfirm = (product: Product, quantity: number, selectedOptions?: SelectedOption[]) => {
+    addProduct(product, quantity, selectedOptions);
+    const optionsSuffix = selectedOptions?.length ? ` — ${selectedOptions.map((o) => o.value).join(', ')}` : '';
+    setToastMessage(`${product.name}${optionsSuffix} (${quantity} ks) je pridané do dopytu.`);
   };
 
   return (

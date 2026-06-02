@@ -2,6 +2,7 @@ import { ShoppingBasket, Sparkles, X } from 'lucide-react';
 import { useEffect } from 'react';
 import { Product } from '../../types';
 import { formatPrice } from '../../utils/format';
+import { formatPriceDelta, getProductOptionGroups } from '../../utils/productOptions';
 import { Button } from '../ui/Button';
 import AllergenBadges from './AllergenBadges';
 import VeganBadge from './VeganBadge';
@@ -23,6 +24,8 @@ const ProductModal = ({ product, onClose, onAddToCart }: ProductModalProps) => {
   }, [product, onClose]);
 
   if (!product) return null;
+
+  const optionGroups = getProductOptionGroups(product);
 
   return (
     <div
@@ -74,6 +77,31 @@ const ProductModal = ({ product, onClose, onAddToCart }: ProductModalProps) => {
                 <AllergenBadges allergens={product.allergens} size="md" />
               </div>
             </div>
+
+            {optionGroups.length > 0 && (
+              <div className="mt-6 space-y-3">
+                {optionGroups.map((group, groupIndex) => (
+                  <div key={group.label + groupIndex}>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-cocoa-500">{group.label}</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {group.choices.map((choice, choiceIndex) => {
+                        const deltaLabel = formatPriceDelta(choice.priceDelta);
+                        return (
+                          <span
+                            key={choice.name + choiceIndex}
+                            className="inline-flex items-center gap-1 rounded-full border border-cream-300 bg-cream-50 px-3 py-1 text-xs font-semibold text-cocoa-700"
+                          >
+                            {choice.name}
+                            {deltaLabel && <span className="font-bold text-gold-700">{deltaLabel}</span>}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+                <p className="text-xs italic text-cocoa-500">Vyberiete pri pridaní do dopytu.</p>
+              </div>
+            )}
 
             {product.tags.length > 0 && (
               <div className="mt-6 flex flex-wrap gap-2">

@@ -1,14 +1,15 @@
 import { Minus, Plus, ShoppingBasket, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Product } from '../../types';
+import { useEffect, useMemo, useState } from 'react';
+import { Product, SelectedOption } from '../../types';
 import { formatPrice } from '../../utils/format';
 import { isCustomPriceType } from '../../utils/orderPricing';
+import { formatPriceDelta, getEffectiveUnitPrice, getProductOptionGroups } from '../../utils/productOptions';
 import { Button } from '../ui/Button';
 
 type QuantityPickerModalProps = {
   product: Product | null;
   onClose: () => void;
-  onConfirm: (product: Product, quantity: number, variant?: string) => void;
+  onConfirm: (product: Product, quantity: number, selectedOptions?: SelectedOption[]) => void;
 };
 
 const STEP_OPTIONS = [10, 20, 50];
@@ -16,18 +17,18 @@ const MAX_QUANTITY = 999;
 
 const QuantityPickerModal = ({ product, onClose, onConfirm }: QuantityPickerModalProps) => {
   const min = product?.minimumOrderQuantity ?? 1;
-  const variants = product?.variants ?? [];
-  const hasVariants = variants.length >= 2;
+  const optionGroups = useMemo(() => (product ? getProductOptionGroups(product) : []), [product]);
   const [quantity, setQuantity] = useState<number>(min);
   const [inputValue, setInputValue] = useState<string>(String(min));
-  const [selectedVariant, setSelectedVariant] = useState<string | undefined>(variants[0]);
+  // One selected choice index per option group.
+  const [selectedIndices, setSelectedIndices] = useState<number[]>(() => optionGroups.map(() => 0));
 
   useEffect(() => {
     if (!product) return;
     const start = product.minimumOrderQuantity ?? 1;
     setQuantity(start);
     setInputValue(String(start));
-    setSelectedVariant(product.variants?.[0]);
+    setSelectedIndices(getProductOptionGroups(product).map(() => 0));
   }, [product]);
 
   useEffect(() => {
@@ -38,6 +39,15 @@ const QuantityPickerModal = ({ product, onClose, onConfirm }: QuantityPickerModa
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [product, onClose]);
+
+  const selectedOptions = useMemo<SelectedOption[]>(
+    () =>
+      optionGroups.map((group, groupIndex) => {
+        const choice = group.choices[selectedIndices[groupIndex] ?? 0] ?? group.choices[0];
+        return { label: group.label, value: choice.name, priceDelta: choice.priceDelta };
+      }),
+    [optionGroups, selectedIndices],
+  );
 
   if (!product) return null;
 
@@ -60,8 +70,9 @@ const QuantityPickerModal = ({ product, onClose, onConfirm }: QuantityPickerModa
     commitQuantity(quantity);
   };
 
-  const isPerPiece = product.unitLabel === 'ks' && typeof product.price === 'number';
-  const subtotal = isPerPiece ? (product.price as number) * quantity : null;
+  const effectiveUnitPrice = getEffectiveUnitPrice(product.price, selectedOptions);
+  const isPerPiece = product.unitLabel === 'ks' && typeof effectiveUnitPrice === 'number';
+  const subtotal = isPerPiece ? (effectiveUnitPrice as number) * quantity : null;
   const belowMin = quantity < min;
 
   return (
@@ -96,32 +107,38 @@ const QuantityPickerModal = ({ product, onClose, onConfirm }: QuantityPickerModa
         </div>
 
         <div className="px-5 py-5">
-          {hasVariants && (
-            <div className="mb-5">
-              <p className="text-sm font-semibold text-cocoa-700">
-                {product.variantLabel ?? 'Variant'}
-              </p>
+          {optionGroups.map((group, groupIndex) => (
+            <div key={group.label + groupIndex} className="mb-5">
+              <p className="text-sm font-semibold text-cocoa-700">{group.label}</p>
               <div className="mt-2 flex flex-wrap gap-2">
-                {variants.map((variant) => {
-                  const isSelected = selectedVariant === variant;
+                {group.choices.map((choice, choiceIndex) => {
+                  const isSelected = (selectedIndices[groupIndex] ?? 0) === choiceIndex;
+                  const deltaLabel = formatPriceDelta(choice.priceDelta);
                   return (
                     <button
-                      key={variant}
+                      key={choice.name + choiceIndex}
                       type="button"
-                      onClick={() => setSelectedVariant(variant)}
+                      onClick={() =>
+                        setSelectedIndices((current) => {
+                          const next = [...current];
+                          next[groupIndex] = choiceIndex;
+                          return next;
+                        })
+                      }
                       className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
                         isSelected
                           ? 'border-rose-400 bg-rose-50 text-rose-700 ring-2 ring-rose-100'
                           : 'border-cream-300 bg-cream-50 text-cocoa-700 hover:border-rose-300 hover:bg-rose-50'
                       }`}
                     >
-                      {variant}
+                      {choice.name}
+                      {deltaLabel && <span className="ml-1 text-xs font-bold text-gold-700">{deltaLabel}</span>}
                     </button>
                   );
                 })}
               </div>
             </div>
-          )}
+          ))}
           <p className="text-sm font-semibold text-cocoa-700">Koľko kusov chcete?</p>
           <p className="mt-1 text-xs text-cocoa-500">
             Minimálny odber z jednej príchute: <strong>{min} ks</strong>. Max {MAX_QUANTITY} ks.
@@ -211,7 +228,7 @@ const QuantityPickerModal = ({ product, onClose, onConfirm }: QuantityPickerModa
           <Button
             type="button"
             onClick={() => {
-              onConfirm(product, Math.max(min, quantity), hasVariants ? selectedVariant : undefined);
+              onConfirm(product, Math.max(min, quantity), selectedOptions.length > 0 ? selectedOptions : undefined);
               onClose();
             }}
             className="flex-1"

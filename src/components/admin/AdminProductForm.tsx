@@ -1,10 +1,11 @@
 import { ChangeEvent, FormEvent, useMemo, useState } from 'react';
 import { ImagePlus, Plus, Save, Trash2, X } from 'lucide-react';
 import { CATEGORIES } from '../../services/mockData';
-import { PriceType, Product, ProductFormValues } from '../../types';
+import { PriceType, Product, ProductFormValues, ProductOptionGroup } from '../../types';
 import { slugify } from '../../services/dataService';
 import { uploadImage } from '../../services/storage';
 import { ALLERGENS } from '../../data/sladkaFazulkaCatalog';
+import { getProductOptionGroups } from '../../utils/productOptions';
 import { Button } from '../ui/Button';
 
 type AdminProductFormProps = {
@@ -25,15 +26,15 @@ const emptyValues: ProductFormValues = {
   unitLabel: 'ks',
   allergens: [],
   tags: [],
-  variants: [],
-  variantLabel: '',
+  optionGroups: [],
   vegan: false,
   minimumOrderQuantity: undefined,
   available: true,
   featured: false,
 };
 
-const MAX_VARIANTS = 5;
+const MAX_OPTION_GROUPS = 4;
+const MAX_CHOICES_PER_GROUP = 5;
 
 const inputClass =
   'w-full rounded-lg border border-cream-200 bg-white px-4 py-3 text-cocoa-900 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100';
@@ -41,10 +42,12 @@ const inputClass =
 const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps) => {
   const [values, setValues] = useState<ProductFormValues>(() => {
     if (!product) return emptyValues;
+    // Normalize legacy single-variant fields into optionGroups so old products edit cleanly.
     return {
       ...product,
-      variants: product.variants ?? [],
-      variantLabel: product.variantLabel ?? '',
+      optionGroups: getProductOptionGroups(product),
+      variants: undefined,
+      variantLabel: undefined,
     };
   });
   const [tagsInput, setTagsInput] = useState(product?.tags.join(', ') ?? '');
@@ -52,29 +55,71 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
   const [formError, setFormError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const variants = values.variants ?? [];
+  const optionGroups = values.optionGroups ?? [];
 
-  const updateVariantAt = (index: number, next: string) => {
-    setValues((current) => {
-      const list = [...(current.variants ?? [])];
-      list[index] = next;
-      return { ...current, variants: list };
+  const mutateGroups = (mutator: (groups: ProductOptionGroup[]) => ProductOptionGroup[]) => {
+    setValues((current) => ({ ...current, optionGroups: mutator(current.optionGroups ?? []) }));
+  };
+
+  const addGroup = () => {
+    mutateGroups((groups) => {
+      if (groups.length >= MAX_OPTION_GROUPS) return groups;
+      // First group defaults to "Variant" (most common); further ones are named by the user.
+      const label = groups.length === 0 ? 'Variant' : '';
+      return [...groups, { label, choices: [{ name: '' }] }];
     });
   };
 
-  const addVariant = () => {
-    setValues((current) => {
-      const list = current.variants ?? [];
-      if (list.length >= MAX_VARIANTS) return current;
-      return { ...current, variants: [...list, ''] };
-    });
+  const removeGroup = (groupIndex: number) => {
+    mutateGroups((groups) => groups.filter((_, i) => i !== groupIndex));
   };
 
-  const removeVariantAt = (index: number) => {
-    setValues((current) => {
-      const list = (current.variants ?? []).filter((_, i) => i !== index);
-      return { ...current, variants: list };
-    });
+  const updateGroupLabel = (groupIndex: number, label: string) => {
+    mutateGroups((groups) => groups.map((group, i) => (i === groupIndex ? { ...group, label } : group)));
+  };
+
+  const addChoice = (groupIndex: number) => {
+    mutateGroups((groups) =>
+      groups.map((group, i) =>
+        i === groupIndex && group.choices.length < MAX_CHOICES_PER_GROUP
+          ? { ...group, choices: [...group.choices, { name: '' }] }
+          : group,
+      ),
+    );
+  };
+
+  const removeChoice = (groupIndex: number, choiceIndex: number) => {
+    mutateGroups((groups) =>
+      groups.map((group, i) =>
+        i === groupIndex ? { ...group, choices: group.choices.filter((_, ci) => ci !== choiceIndex) } : group,
+      ),
+    );
+  };
+
+  const updateChoiceName = (groupIndex: number, choiceIndex: number, name: string) => {
+    mutateGroups((groups) =>
+      groups.map((group, i) =>
+        i === groupIndex
+          ? { ...group, choices: group.choices.map((choice, ci) => (ci === choiceIndex ? { ...choice, name } : choice)) }
+          : group,
+      ),
+    );
+  };
+
+  const updateChoiceDelta = (groupIndex: number, choiceIndex: number, raw: string) => {
+    const priceDelta = raw.trim() === '' ? undefined : Number(raw);
+    mutateGroups((groups) =>
+      groups.map((group, i) =>
+        i === groupIndex
+          ? {
+              ...group,
+              choices: group.choices.map((choice, ci) =>
+                ci === choiceIndex ? { ...choice, priceDelta } : choice,
+              ),
+            }
+          : group,
+      ),
+    );
   };
 
   const previewUrl = useMemo(() => values.imageUrl || product?.imageUrl || '', [product?.imageUrl, values.imageUrl]);
@@ -125,10 +170,21 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
       .map((tag) => tag.trim())
       .filter(Boolean);
 
-    const cleanVariants = (values.variants ?? [])
-      .map((v) => v.trim())
-      .filter(Boolean);
-    const cleanVariantLabel = (values.variantLabel ?? '').trim();
+    // Drop empty choices/groups and default a missing group label to "Variant".
+    const cleanOptionGroups: ProductOptionGroup[] = (values.optionGroups ?? [])
+      .map((group) => ({
+        label: group.label.trim() || 'Variant',
+        choices: group.choices
+          .map((choice) => ({
+            name: choice.name.trim(),
+            priceDelta:
+              choice.priceDelta !== undefined && Number.isFinite(choice.priceDelta) && choice.priceDelta !== 0
+                ? choice.priceDelta
+                : undefined,
+          }))
+          .filter((choice) => choice.name.length > 0),
+      }))
+      .filter((group) => group.choices.length > 0);
 
     try {
       await onSubmit({
@@ -136,8 +192,10 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
         slug: values.slug || slugify(values.name),
         price: requiresNumericPrice ? values.price : null,
         tags: cleanTags,
-        variants: cleanVariants.length > 0 ? cleanVariants : undefined,
-        variantLabel: cleanVariants.length > 0 && cleanVariantLabel ? cleanVariantLabel : undefined,
+        optionGroups: cleanOptionGroups.length > 0 ? cleanOptionGroups : undefined,
+        // Clear legacy fields — optionGroups is now the single source of truth.
+        variants: undefined,
+        variantLabel: undefined,
       });
     } catch {
       setFormError('Produkt sa nepodarilo uložiť. Skontrolujte údaje a skúste to znova.');
@@ -309,54 +367,101 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
           <div className="rounded-xl border border-cream-200 bg-cream-50/60 p-4 sm:col-span-2">
             <div className="mb-3 flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold text-cocoa-700">Varianty / príchute</p>
+                <p className="text-sm font-semibold text-cocoa-700">Možnosti výberu (varianty, príchute…)</p>
                 <p className="mt-0.5 text-xs text-cocoa-500">
-                  Voliteľné. Ak pridáte 2 a viac, zákazník si bude môcť vybrať pri pridaní do dopytu. Max {MAX_VARIANTS}.
+                  Voliteľné. Pridajte jednu alebo viac skupín (napr. Variant, Príchuť). Pri každej možnosti môžete zadať
+                  zmenu ceny (napr. +0,30 pre vegánsku). Max {MAX_OPTION_GROUPS} skupiny, {MAX_CHOICES_PER_GROUP}{' '}
+                  možností v skupine.
                 </p>
               </div>
               <button
                 type="button"
-                onClick={addVariant}
-                disabled={variants.length >= MAX_VARIANTS}
-                className="inline-flex items-center gap-1 rounded-full border border-cream-300 bg-white px-3 py-1.5 text-xs font-semibold text-cocoa-700 transition hover:border-rose-300 hover:bg-rose-50 disabled:pointer-events-none disabled:opacity-40"
+                onClick={addGroup}
+                disabled={optionGroups.length >= MAX_OPTION_GROUPS}
+                className="inline-flex shrink-0 items-center gap-1 rounded-full border border-cream-300 bg-white px-3 py-1.5 text-xs font-semibold text-cocoa-700 transition hover:border-rose-300 hover:bg-rose-50 disabled:pointer-events-none disabled:opacity-40"
               >
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                Pridať variant
+                Pridať skupinu
               </button>
             </div>
-            {variants.length > 0 ? (
-              <div className="space-y-2">
-                <label className="block">
-                  <span className="mb-1 block text-xs font-semibold text-cocoa-600">Názov výberu (napr. Náplň, Príchuť)</span>
-                  <input
-                    value={values.variantLabel ?? ''}
-                    onChange={(event) => setValues((current) => ({ ...current, variantLabel: event.target.value }))}
-                    className={inputClass}
-                    placeholder="Náplň"
-                  />
-                </label>
-                {variants.map((variant, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <input
-                      value={variant}
-                      onChange={(event) => updateVariantAt(index, event.target.value)}
-                      className={inputClass}
-                      placeholder={`Variant ${index + 1} (napr. Jahoda)`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeVariantAt(index)}
-                      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-cocoa-500 transition hover:bg-red-50 hover:text-red-700"
-                      title="Odstrániť variant"
-                    >
-                      <span className="sr-only">Odstrániť variant</span>
-                      <Trash2 className="h-4 w-4" aria-hidden="true" />
-                    </button>
+            {optionGroups.length > 0 ? (
+              <div className="space-y-4">
+                {optionGroups.map((group, groupIndex) => (
+                  <div key={groupIndex} className="rounded-lg border border-cream-200 bg-white p-3">
+                    <div className="flex items-end gap-2">
+                      <label className="block flex-1">
+                        <span className="mb-1 block text-xs font-semibold text-cocoa-600">
+                          Názov skupiny (napr. Variant, Príchuť)
+                        </span>
+                        <input
+                          value={group.label}
+                          onChange={(event) => updateGroupLabel(groupIndex, event.target.value)}
+                          className={inputClass}
+                          placeholder="Variant"
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => removeGroup(groupIndex)}
+                        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-cocoa-500 transition hover:bg-red-50 hover:text-red-700"
+                        title="Odstrániť skupinu"
+                      >
+                        <span className="sr-only">Odstrániť skupinu</span>
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                    </div>
+                    <div className="mt-3 space-y-2">
+                      {group.choices.map((choice, choiceIndex) => (
+                        <div key={choiceIndex} className="flex items-center gap-2">
+                          <input
+                            value={choice.name}
+                            onChange={(event) => updateChoiceName(groupIndex, choiceIndex, event.target.value)}
+                            className={`${inputClass} flex-1`}
+                            placeholder={`Možnosť ${choiceIndex + 1} (napr. Vegan)`}
+                          />
+                          <div className="relative w-28 shrink-0">
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={choice.priceDelta ?? ''}
+                              onChange={(event) => updateChoiceDelta(groupIndex, choiceIndex, event.target.value)}
+                              className={`${inputClass} pr-7 text-right`}
+                              placeholder="0"
+                              title="Zmena ceny v EUR (napr. 0.30 alebo -0.20)"
+                            />
+                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-cocoa-400">
+                              €
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeChoice(groupIndex, choiceIndex)}
+                            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-cocoa-500 transition hover:bg-red-50 hover:text-red-700"
+                            title="Odstrániť možnosť"
+                          >
+                            <span className="sr-only">Odstrániť možnosť</span>
+                            <Trash2 className="h-4 w-4" aria-hidden="true" />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => addChoice(groupIndex)}
+                        disabled={group.choices.length >= MAX_CHOICES_PER_GROUP}
+                        className="inline-flex items-center gap-1 rounded-full border border-cream-300 bg-cream-50 px-3 py-1.5 text-xs font-semibold text-cocoa-700 transition hover:border-rose-300 hover:bg-rose-50 disabled:pointer-events-none disabled:opacity-40"
+                      >
+                        <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                        Pridať možnosť
+                      </button>
+                    </div>
                   </div>
                 ))}
+                <p className="text-xs text-cocoa-500">
+                  Zmena ceny sa pripočíta k základnej cene. Zápornú hodnotu (napr. -0.20) použite pre zľavu.
+                </p>
               </div>
             ) : (
-              <p className="text-xs italic text-cocoa-500">Žiadne varianty — zákazník si zvolí len počet kusov.</p>
+              <p className="text-xs italic text-cocoa-500">Žiadne možnosti — zákazník si zvolí len počet kusov.</p>
             )}
           </div>
 

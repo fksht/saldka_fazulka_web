@@ -23,7 +23,8 @@ import { useSeo } from '../hooks/useSeo';
 import { CONTACT_INFO } from '../services/mockData';
 import { dataService } from '../services/dataService';
 import { SECTION_IMAGES } from '../data/sladkaFazulkaCatalog';
-import { Product } from '../types';
+import { Product, SelectedOption } from '../types';
+import { productNeedsPicker } from '../utils/productOptions';
 
 const trustPills = [
   { title: 'Ručná výroba', text: 'V menších množstvách, s dôrazom na chuť a detail.', icon: Heart },
@@ -85,11 +86,8 @@ const Home = () => {
     void fetchProducts();
   }, []);
 
-  const needsPicker = (product: Product) =>
-    (product.minimumOrderQuantity ?? 1) > 1 || (product.variants?.length ?? 0) >= 2;
-
   const handleAddToCart = (product: Product) => {
-    if (needsPicker(product)) {
+    if (productNeedsPicker(product)) {
       setPickerProduct(product);
       return;
     }
@@ -97,10 +95,10 @@ const Home = () => {
     setToastMessage(`${product.name} je pridané do dopytu.`);
   };
 
-  const handlePickerConfirm = (product: Product, quantity: number, variant?: string) => {
-    addProduct(product, quantity, variant);
-    const variantSuffix = variant ? ` — ${variant}` : '';
-    setToastMessage(`${product.name}${variantSuffix} (${quantity} ks) je pridané do dopytu.`);
+  const handlePickerConfirm = (product: Product, quantity: number, selectedOptions?: SelectedOption[]) => {
+    addProduct(product, quantity, selectedOptions);
+    const optionsSuffix = selectedOptions?.length ? ` — ${selectedOptions.map((o) => o.value).join(', ')}` : '';
+    setToastMessage(`${product.name}${optionsSuffix} (${quantity} ks) je pridané do dopytu.`);
   };
 
   return (

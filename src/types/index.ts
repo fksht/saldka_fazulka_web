@@ -22,6 +22,18 @@ export interface Allergen {
   description: string;
 }
 
+export interface ProductOptionChoice {
+  name: string;
+  /** Added to the base unit price when this choice is selected (EUR, may be negative). */
+  priceDelta?: number;
+}
+
+export interface ProductOptionGroup {
+  /** Customer-facing name of the choice, e.g. "Variant", "Príchuť". */
+  label: string;
+  choices: ProductOptionChoice[];
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -35,7 +47,11 @@ export interface Product {
   unitLabel?: string;
   allergens: number[];
   tags: string[];
+  /** Multiple selectable option groups (variant, flavour, …), each with optional price changes. */
+  optionGroups?: ProductOptionGroup[];
+  /** @deprecated Legacy single-group fields, kept for backward compatibility. Use optionGroups. */
   variants?: string[];
+  /** @deprecated See optionGroups. */
   variantLabel?: string;
   vegan?: boolean;
   minimumOrderQuantity?: number;
@@ -134,6 +150,12 @@ export interface TastingDetails {
   note?: string;
 }
 
+export interface SelectedOption {
+  label: string;
+  value: string;
+  priceDelta?: number;
+}
+
 export interface OrderItem {
   productId: string;
   productName: string;
@@ -146,7 +168,11 @@ export interface OrderItem {
   note?: string;
   cakeConfiguration?: CakeConfiguration;
   imageUrl?: string;
+  /** Selected option groups (variant, flavour, …) chosen by the customer. */
+  selectedOptions?: SelectedOption[];
+  /** @deprecated Combined display string of selected options, kept for the order email + legacy carts. */
   variant?: string;
+  /** @deprecated See selectedOptions. */
   variantLabel?: string;
   tastingDetails?: TastingDetails;
 }

@@ -103,10 +103,16 @@ const OrderPage = () => {
                               )}
                               <div className="min-w-0 flex-1">
                                 <h2 className="font-display text-lg font-semibold text-cocoa-950">{item.productName}</h2>
-                                {item.variant && (
+                                {item.selectedOptions && item.selectedOptions.length > 0 ? (
                                   <p className="mt-1 text-sm font-semibold text-rose-700">
-                                    {item.variantLabel ? `${item.variantLabel}: ` : ''}{item.variant}
+                                    {item.selectedOptions.map((option) => `${option.label}: ${option.value}`).join(' · ')}
                                   </p>
+                                ) : (
+                                  item.variant && (
+                                    <p className="mt-1 text-sm font-semibold text-rose-700">
+                                      {item.variantLabel ? `${item.variantLabel}: ` : ''}{item.variant}
+                                    </p>
+                                  )
                                 )}
                                 <p className="mt-1 text-sm text-cocoa-500">{formatOrderItemUnitPrice(item)}</p>
                                 {item.tastingDetails && (

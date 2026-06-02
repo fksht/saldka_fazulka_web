@@ -37,10 +37,16 @@ const OrderSummary = ({ items, title = 'Rekapitulácia', className = '' }: Order
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-cocoa-900">{item.productName}</p>
-                  {item.variant && (
+                  {item.selectedOptions && item.selectedOptions.length > 0 ? (
                     <p className="text-xs font-semibold text-rose-700">
-                      {item.variantLabel ? `${item.variantLabel}: ` : ''}{item.variant}
+                      {item.selectedOptions.map((option) => `${option.label}: ${option.value}`).join(' · ')}
                     </p>
+                  ) : (
+                    item.variant && (
+                      <p className="text-xs font-semibold text-rose-700">
+                        {item.variantLabel ? `${item.variantLabel}: ` : ''}{item.variant}
+                      </p>
+                    )
                   )}
                   <p className="text-sm text-cocoa-500">
                     {item.quantity} × {item.unitLabel ?? 'ks'}
