@@ -10,7 +10,15 @@ type ProductCardProps = {
   onAddToCart: (product: Product) => void;
 };
 
-const ProductCard = ({ product, onSelect, onAddToCart }: ProductCardProps) => (
+// Only short, label-style tags belong as overlays on the image. Long
+// sentence-style tags (used as feature highlights) would cover the photo,
+// so they are shown only in the product detail modal.
+const MAX_OVERLAY_TAG_LENGTH = 18;
+
+const ProductCard = ({ product, onSelect, onAddToCart }: ProductCardProps) => {
+  const overlayTags = product.tags.filter((tag) => tag.length <= MAX_OVERLAY_TAG_LENGTH).slice(0, 2);
+
+  return (
   <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.4rem] border border-cream-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-rose-200 hover:shadow-xl">
     <button
       type="button"
@@ -29,16 +37,18 @@ const ProductCard = ({ product, onSelect, onAddToCart }: ProductCardProps) => (
           Sladká fazuľka
         </div>
       )}
-      <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
-        {product.tags.slice(0, 2).map((tag) => (
-          <span
-            key={tag}
-            className="rounded-full bg-white/95 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-cocoa-700 shadow-sm backdrop-blur"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
+      {overlayTags.length > 0 && (
+        <div className="absolute left-3 top-3 flex max-w-[70%] flex-wrap gap-1.5">
+          {overlayTags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full bg-white/95 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-cocoa-700 shadow-sm backdrop-blur"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
       {product.vegan && (
         <div className="pointer-events-none absolute right-3 top-3">
           <VeganBadge size={52} />
@@ -93,6 +103,7 @@ const ProductCard = ({ product, onSelect, onAddToCart }: ProductCardProps) => (
       </div>
     </div>
   </article>
-);
+  );
+};
 
 export default ProductCard;
