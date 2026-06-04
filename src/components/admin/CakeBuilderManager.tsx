@@ -62,22 +62,27 @@ const OptionListEditor = ({
       ) : (
         <div className="space-y-2">
           {options.map((option, index) => (
-            <div key={option.id} className="flex flex-wrap items-center gap-2">
+            <div
+              key={option.id}
+              className={`grid items-center gap-2 ${
+                withGroup ? 'sm:grid-cols-[1fr_11rem_6.5rem_2.25rem]' : 'sm:grid-cols-[1fr_6.5rem_2.25rem]'
+              }`}
+            >
               <input
                 value={option.name}
                 onChange={(event) => updateAt(index, { name: event.target.value })}
-                className={`${inputClass} min-w-[10rem] flex-1`}
+                className={inputClass}
                 placeholder={namePlaceholder}
               />
               {withGroup && (
                 <input
                   value={option.group ?? ''}
                   onChange={(event) => updateAt(index, { group: event.target.value || undefined })}
-                  className={`${inputClass} w-40`}
-                  placeholder="Skupina (napr. Sviеže)"
+                  className={inputClass}
+                  placeholder="Skupina"
                 />
               )}
-              <div className="relative w-28 shrink-0">
+              <div className="relative">
                 <input
                   type="number"
                   step="0.01"
@@ -94,7 +99,7 @@ const OptionListEditor = ({
               <button
                 type="button"
                 onClick={() => onChange(options.filter((_, i) => i !== index))}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-cocoa-500 transition hover:bg-red-50 hover:text-red-700"
+                className="inline-flex h-9 w-9 items-center justify-center justify-self-end rounded-full text-cocoa-500 transition hover:bg-red-50 hover:text-red-700"
                 title="Odstrániť"
               >
                 <span className="sr-only">Odstrániť</span>
@@ -143,26 +148,29 @@ const SizeListEditor = ({ sizes, onChange }: SizeListEditorProps) => {
       ) : (
         <div className="space-y-2">
           {sizes.map((size, index) => (
-            <div key={size.id} className="flex flex-wrap items-center gap-2">
+            <div
+              key={size.id}
+              className="grid items-center gap-2 sm:grid-cols-[9rem_6rem_1fr_6.5rem_8rem_2.25rem]"
+            >
               <input
                 value={size.name}
                 onChange={(event) => updateAt(index, { name: event.target.value })}
-                className={`${inputClass} w-32`}
+                className={inputClass}
                 placeholder="Názov (Stredná)"
               />
               <input
                 value={size.diameter ?? ''}
                 onChange={(event) => updateAt(index, { diameter: event.target.value || undefined })}
-                className={`${inputClass} w-24`}
+                className={inputClass}
                 placeholder="⌀ 18 cm"
               />
               <input
                 value={size.portions}
                 onChange={(event) => updateAt(index, { portions: event.target.value })}
-                className={`${inputClass} min-w-[8rem] flex-1`}
+                className={inputClass}
                 placeholder="cca 13–15 porcií"
               />
-              <div className="relative w-24 shrink-0">
+              <div className="relative">
                 <input
                   type="number"
                   step="0.01"
@@ -179,7 +187,7 @@ const SizeListEditor = ({ sizes, onChange }: SizeListEditorProps) => {
               <select
                 value={size.priceType}
                 onChange={(event) => updateAt(index, { priceType: event.target.value as PriceType })}
-                className={`${inputClass} w-28`}
+                className={inputClass}
                 title="Typ ceny"
               >
                 <option value="from">od ceny</option>
@@ -189,7 +197,7 @@ const SizeListEditor = ({ sizes, onChange }: SizeListEditorProps) => {
               <button
                 type="button"
                 onClick={() => onChange(sizes.filter((_, i) => i !== index))}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-cocoa-500 transition hover:bg-red-50 hover:text-red-700"
+                className="inline-flex h-9 w-9 items-center justify-center justify-self-end rounded-full text-cocoa-500 transition hover:bg-red-50 hover:text-red-700"
                 title="Odstrániť"
               >
                 <span className="sr-only">Odstrániť</span>
