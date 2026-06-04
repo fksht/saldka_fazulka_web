@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ShoppingBasket, Heart } from 'lucide-react';
 import GoldDivider from '../components/ui/GoldDivider';
 import SectionHeader from '../components/ui/SectionHeader';
@@ -15,9 +15,21 @@ import { formatPrice } from '../utils/format';
 const Ochutnavka = () => {
   useSeo('/ochutnavkovy-box');
   const navigate = useNavigate();
-  const { addTastingBox } = useCart();
+  const { addTastingBox, items } = useCart();
+  const [searchParams] = useSearchParams();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [pickerTasting, setPickerTasting] = useState<TastingBox | null>(null);
+
+  const editId = searchParams.get('edit');
+  const editingItem = editId ? items.find((item) => item.productId === editId && item.kind === 'tasting') : undefined;
+
+  // Open the picker preloaded when arriving with ?edit=tasting-… from the basket.
+  useEffect(() => {
+    if (!editId) return;
+    const tastingId = editId.replace(/^tasting-/, '');
+    const tasting = TASTING_BOXES.find((box) => box.id === tastingId);
+    if (tasting) setPickerTasting(tasting);
+  }, [editId]);
 
   const handleRequest = (tasting: TastingBox) => {
     setPickerTasting(tasting);
@@ -25,6 +37,10 @@ const Ochutnavka = () => {
 
   const handleConfirm = (tasting: TastingBox, details: TastingDetails) => {
     addTastingBox(tasting, details);
+    if (editingItem) {
+      navigate('/objednavka');
+      return;
+    }
     setToastMessage(`${tasting.title} je v dopyte.`);
   };
 
@@ -114,6 +130,8 @@ const Ochutnavka = () => {
         tasting={pickerTasting}
         onClose={() => setPickerTasting(null)}
         onConfirm={handleConfirm}
+        initialDetails={editingItem?.tastingDetails ?? null}
+        submitLabel={editingItem ? 'Uložiť zmeny' : undefined}
       />
 
       {toastMessage && (

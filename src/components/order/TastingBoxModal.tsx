@@ -9,6 +9,9 @@ type TastingBoxModalProps = {
   tasting: TastingBox | null;
   onClose: () => void;
   onConfirm: (tasting: TastingBox, details: TastingDetails) => void;
+  /** When set, the modal preloads these selections (editing an existing item). */
+  initialDetails?: TastingDetails | null;
+  submitLabel?: string;
 };
 
 const MAX_CREAM_SELECTIONS = 3;
@@ -22,7 +25,7 @@ const todayInputValue = () => {
   return new Date(now.getTime() - offset).toISOString().slice(0, 10);
 };
 
-const TastingBoxModal = ({ tasting, onClose, onConfirm }: TastingBoxModalProps) => {
+const TastingBoxModal = ({ tasting, onClose, onConfirm, initialDetails, submitLabel }: TastingBoxModalProps) => {
   const isBento = tasting?.id === 'tasting-torta';
   const isDesserts = tasting?.id === 'tasting-zakusky';
 
@@ -33,11 +36,11 @@ const TastingBoxModal = ({ tasting, onClose, onConfirm }: TastingBoxModalProps) 
 
   useEffect(() => {
     if (!tasting) return;
-    setSelectedSelections([]);
-    setSelectedVersions([]);
-    setNote('');
-    setPreferredDate('');
-  }, [tasting]);
+    setSelectedSelections(initialDetails?.selections ?? []);
+    setSelectedVersions(initialDetails?.versions ?? []);
+    setNote(initialDetails?.note ?? '');
+    setPreferredDate(initialDetails?.preferredDate ?? '');
+  }, [tasting, initialDetails]);
 
   const toggleVersion = (version: string) =>
     setSelectedVersions((current) =>
@@ -280,7 +283,7 @@ const TastingBoxModal = ({ tasting, onClose, onConfirm }: TastingBoxModalProps) 
           </Button>
           <Button type="button" onClick={handleConfirm} className="flex-1">
             <ShoppingBasket className="h-4 w-4" aria-hidden="true" />
-            Pridať ochutnávku do dopytu
+            {submitLabel ?? 'Pridať ochutnávku do dopytu'}
           </Button>
         </div>
       </div>

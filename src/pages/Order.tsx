@@ -203,6 +203,18 @@ const OrderPage = () => {
                               </label>
                             </div>
                           )}
+
+                          {item.kind === 'tasting' && (
+                            <div className="mt-4">
+                              <Link
+                                to={`/ochutnavkovy-box?edit=${encodeURIComponent(item.productId)}`}
+                                className="inline-flex items-center gap-2 rounded-full border border-cream-200 bg-cream-50 px-4 py-2 text-sm font-semibold text-cocoa-700 transition hover:border-rose-300 hover:bg-rose-50"
+                              >
+                                <Pencil className="h-4 w-4" aria-hidden="true" />
+                                Upraviť výber
+                              </Link>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
