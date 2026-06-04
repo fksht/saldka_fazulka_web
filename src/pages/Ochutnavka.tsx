@@ -16,12 +16,16 @@ const Ochutnavka = () => {
   useSeo('/ochutnavkovy-box');
   const navigate = useNavigate();
   const { addTastingBox, items } = useCart();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [pickerTasting, setPickerTasting] = useState<TastingBox | null>(null);
 
   const editId = searchParams.get('edit');
   const editingItem = editId ? items.find((item) => item.productId === editId && item.kind === 'tasting') : undefined;
+
+  const clearEdit = () => {
+    if (searchParams.has('edit')) setSearchParams({}, { replace: true });
+  };
 
   // Open the picker preloaded when arriving with ?edit=tasting-… from the basket.
   useEffect(() => {
@@ -31,8 +35,16 @@ const Ochutnavka = () => {
     if (tasting) setPickerTasting(tasting);
   }, [editId]);
 
+  // Opening a fresh picker drops any leftover edit context.
   const handleRequest = (tasting: TastingBox) => {
+    clearEdit();
     setPickerTasting(tasting);
+  };
+
+  // Closing the modal exits edit mode so the next open starts clean.
+  const handleClose = () => {
+    setPickerTasting(null);
+    clearEdit();
   };
 
   const handleConfirm = (tasting: TastingBox, details: TastingDetails) => {
@@ -128,7 +140,7 @@ const Ochutnavka = () => {
 
       <TastingBoxModal
         tasting={pickerTasting}
-        onClose={() => setPickerTasting(null)}
+        onClose={handleClose}
         onConfirm={handleConfirm}
         initialDetails={editingItem?.tastingDetails ?? null}
         submitLabel={editingItem ? 'Uložiť zmeny' : undefined}
