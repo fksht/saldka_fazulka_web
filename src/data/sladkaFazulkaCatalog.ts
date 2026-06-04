@@ -2,6 +2,7 @@ import {
   AboutContent,
   Allergen,
   CakeBase,
+  CakeBuilderConfig,
   CakeCream,
   CakeSize,
   CandyBarPackage,
@@ -622,6 +623,67 @@ export const CAKE_NOTES = [
   'Pri náročnejších tortách (napr. modelované postavičky) je cena stanovená individuálne.',
   'Na želanie pripravím vegánsku alebo low sugar verziu.',
 ];
+
+const slugifyId = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+// Default building blocks for the admin-managed custom-cake builder. Derived
+// from the legacy hardcoded arrays so the live site keeps its current content
+// until the admin edits it. All surcharges (priceDelta) start unset (= 0 €) so
+// the owner decides each one. Fillings are seeded from the common cukráreň list.
+export const DEFAULT_CAKE_CONFIG: CakeBuilderConfig = {
+  maxCreams: 3,
+  notes: CAKE_NOTES,
+  sizes: CAKE_SIZES.map((size) => ({
+    id: size.id,
+    name: size.name,
+    diameter: size.diameter !== '—' ? size.diameter : undefined,
+    portions: size.portions,
+    price: size.priceFrom,
+    priceType: size.priceType,
+  })),
+  bases: CAKE_BASES.map((base) => ({
+    id: base.id,
+    name: base.name,
+    description: base.description,
+  })),
+  creams: CAKE_CREAMS.map((cream) => ({
+    id: cream.id,
+    name: cream.name,
+    group: CREAM_GROUP_LABELS[cream.group].title,
+  })),
+  fillings: [
+    'jahody',
+    'maliny',
+    'čučoriedky',
+    'lesné ovocie',
+    'mango',
+    'marakuja',
+    'orange curd',
+    'lemon curd',
+    'nugát',
+    'karamel',
+    'lieskovce',
+    'mandle',
+    'arašidy',
+    'orechy',
+    'pistácie',
+    'biela čokoláda',
+    'čokoláda',
+    'Lotus sušienky',
+  ].map((name) => ({ id: `filling-${slugifyId(name)}`, name })),
+  dietary: [
+    { id: 'diet-vegan', name: 'Vegánska verzia' },
+    { id: 'diet-bezlepkova', name: 'Bezlepková' },
+    { id: 'diet-bezlaktozova', name: 'Bezlaktózová' },
+    { id: 'diet-low-sugar', name: 'Low sugar' },
+  ],
+};
 
 // === CANDY BAR — informačné info + balíčky ===
 

@@ -139,10 +139,49 @@ export interface CakeConfiguration {
   sizeName: string;
   sizePortions: string;
   sizePriceFrom: number;
+  /** Chosen fillings ("Doplnky vnútri torty"). */
+  fillingNames?: string[];
+  /** Special/dietary versions (vegánska, bezlepková, bezlaktózová…). Also mirrored to `extras`. */
+  dietaryNames?: string[];
+  /** Computed total (size base + all surcharges). Null = price by agreement. */
+  totalPrice?: number | null;
+  priceType?: PriceType;
+  /** @deprecated Use dietaryNames. Kept for the order email + existing displays. */
   extras?: string[];
   inspirationUrl?: string;
   inspirationImage?: string;
   note?: string;
+}
+
+// === Admin-managed custom-cake builder configuration ===
+
+export interface CakeBuilderSize {
+  id: string;
+  name: string;
+  diameter?: string;
+  portions: string;
+  price: number;
+  priceType: PriceType;
+}
+
+export interface CakeBuilderOption {
+  id: string;
+  name: string;
+  description?: string;
+  /** Free-text group label, used to group creams in the builder. */
+  group?: string;
+  /** Surcharge added to the cake total when selected (EUR). */
+  priceDelta?: number;
+}
+
+export interface CakeBuilderConfig {
+  sizes: CakeBuilderSize[];
+  bases: CakeBuilderOption[];
+  creams: CakeBuilderOption[];
+  fillings: CakeBuilderOption[];
+  dietary: CakeBuilderOption[];
+  maxCreams: number;
+  notes: string[];
 }
 
 export type OrderItemKind = 'product' | 'package' | 'box' | 'custom-cake' | 'tasting';

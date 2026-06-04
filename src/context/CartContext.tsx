@@ -196,15 +196,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const addCustomCake = useCallback(
     (config: CakeConfiguration) => {
-      // The bigger "individual" size has no list price — it's by agreement.
-      const isIndividual = config.sizeId === 'size-individualna';
+      // Individually-priced cakes (or sizes set to "individual") have no list price.
+      const isIndividual = config.priceType === 'individual' || config.totalPrice == null;
       commit((current) => [
         ...current,
         {
           productId: createCustomCakeId(),
           productName: `Torta na mieru — ${config.sizeName}`,
           quantity: 1,
-          unitPrice: isIndividual ? null : config.sizePriceFrom,
+          unitPrice: isIndividual ? null : config.totalPrice ?? config.sizePriceFrom,
           priceType: isIndividual ? 'individual' : 'from',
           kind: 'custom-cake',
           cakeConfiguration: config,

@@ -42,6 +42,14 @@ create table if not exists public.orders (
   created_at  timestamptz not null default now()
 );
 
+-- Custom-cake builder configuration (sizes, bases, creams, fillings, dietary
+-- options + their prices). A single row with id = 'default'.
+create table if not exists public.cake_config (
+  id          text primary key,
+  data        jsonb   not null,
+  updated_at  timestamptz not null default now()
+);
+
 -- Display order for catalog items (seeded from the catalog array index;
 -- new admin items are appended). Added separately so re-running is safe.
 alter table public.products           add column if not exists position int;
@@ -59,6 +67,7 @@ alter table public.products            enable row level security;
 alter table public.gallery_images      enable row level security;
 alter table public.candy_bar_packages  enable row level security;
 alter table public.orders              enable row level security;
+alter table public.cake_config         enable row level security;
 
 -- Public read (visible items only). Applies to anon + authenticated.
 drop policy if exists "products public read" on public.products;
@@ -73,6 +82,11 @@ drop policy if exists "packages public read" on public.candy_bar_packages;
 create policy "packages public read" on public.candy_bar_packages
   for select using (hidden = false);
 
+-- Cake builder config is public-readable (the builder needs it for everyone).
+drop policy if exists "cake_config public read" on public.cake_config;
+create policy "cake_config public read" on public.cake_config
+  for select using (true);
+
 -- Admin: full access (read incl. hidden/unavailable, plus insert/update/delete).
 drop policy if exists "products admin all" on public.products;
 create policy "products admin all" on public.products
@@ -84,6 +98,10 @@ create policy "gallery admin all" on public.gallery_images
 
 drop policy if exists "packages admin all" on public.candy_bar_packages;
 create policy "packages admin all" on public.candy_bar_packages
+  for all to authenticated using (true) with check (true);
+
+drop policy if exists "cake_config admin all" on public.cake_config;
+create policy "cake_config admin all" on public.cake_config
   for all to authenticated using (true) with check (true);
 
 -- Orders: anyone may place one; only admin may read/update. No public read.
@@ -104,11 +122,11 @@ create policy "orders admin manage" on public.orders
 grant usage on schema public to anon, authenticated;
 
 -- Read catalog (rows further limited by RLS to visible items for anon).
-grant select on public.products, public.gallery_images, public.candy_bar_packages
+grant select on public.products, public.gallery_images, public.candy_bar_packages, public.cake_config
   to anon, authenticated;
 
 -- Admin manages the catalog.
-grant insert, update, delete on public.products, public.gallery_images, public.candy_bar_packages
+grant insert, update, delete on public.products, public.gallery_images, public.candy_bar_packages, public.cake_config
   to authenticated;
 
 -- Anyone may place an order (insert only, no read); admin manages them.

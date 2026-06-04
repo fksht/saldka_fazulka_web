@@ -1,4 +1,5 @@
 import {
+  CakeBuilderConfig,
   CandyBarPackage,
   CandyBarPackageFormValues,
   GalleryImage,
@@ -11,7 +12,7 @@ import {
 } from '../types';
 import { MOCK_CANDY_BAR_PACKAGES, MOCK_GALLERY, MOCK_PRODUCTS } from './mockData';
 import { getOrderPricingSummary } from '../utils/orderPricing';
-import { normalizeAssetUrl } from '../data/sladkaFazulkaCatalog';
+import { DEFAULT_CAKE_CONFIG, normalizeAssetUrl } from '../data/sladkaFazulkaCatalog';
 import { supabase } from './supabaseClient';
 
 // Self-heal image paths read from the backend so a stale base prefix can't
@@ -36,6 +37,7 @@ const PRODUCT_STORAGE_KEY = 'sladka-fazulka.products.v1';
 const ORDER_STORAGE_KEY = 'sladka-fazulka.orders.v1';
 const GALLERY_STORAGE_KEY = 'sladka-fazulka.gallery.v1';
 const CANDY_BAR_PACKAGE_STORAGE_KEY = 'sladka-fazulka.candy-bar-packages.v1';
+const CAKE_CONFIG_STORAGE_KEY = 'sladka-fazulka.cake-config.v1';
 
 const wait = (ms = 180) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
@@ -106,6 +108,10 @@ export interface DataApi {
   addGalleryImage(image: GalleryImageDraft): Promise<GalleryImage>;
   updateGalleryImage(id: string, updates: Partial<GalleryImageDraft>): Promise<GalleryImage>;
   deleteGalleryImage(id: string): Promise<void>;
+
+  /** Custom-cake builder building blocks (sizes, bases, creams, fillings, dietary). */
+  getCakeConfig(): Promise<CakeBuilderConfig>;
+  saveCakeConfig(config: CakeBuilderConfig): Promise<CakeBuilderConfig>;
 }
 
 // ============================================================
@@ -333,6 +339,21 @@ class LocalDataService implements DataApi {
     const images = this.galleryRepository.read().filter((image) => image.id !== id);
     this.galleryRepository.write(images);
     await wait();
+  }
+
+  async getCakeConfig(): Promise<CakeBuilderConfig> {
+    try {
+      const stored = window.localStorage.getItem(CAKE_CONFIG_STORAGE_KEY);
+      return stored ? (JSON.parse(stored) as CakeBuilderConfig) : DEFAULT_CAKE_CONFIG;
+    } catch {
+      return DEFAULT_CAKE_CONFIG;
+    }
+  }
+
+  async saveCakeConfig(config: CakeBuilderConfig): Promise<CakeBuilderConfig> {
+    window.localStorage.setItem(CAKE_CONFIG_STORAGE_KEY, JSON.stringify(config));
+    await wait();
+    return config;
   }
 }
 
@@ -598,6 +619,23 @@ class SupabaseDataService implements DataApi {
   async deleteGalleryImage(id: string): Promise<void> {
     const { error } = await this.db.from('gallery_images').delete().eq('id', id);
     if (error) this.fail('Obrázok sa nepodarilo odstrániť', error);
+  }
+
+  async getCakeConfig(): Promise<CakeBuilderConfig> {
+    // Degrade gracefully to the bundled default if the table is missing (e.g. the
+    // migration hasn't been run yet) so the public builder keeps working.
+    const { data, error } = await this.db.from('cake_config').select('data').eq('id', 'default').limit(1);
+    if (error) return DEFAULT_CAKE_CONFIG;
+    const config = (data?.[0] as { data: CakeBuilderConfig } | undefined)?.data;
+    return config ?? DEFAULT_CAKE_CONFIG;
+  }
+
+  async saveCakeConfig(config: CakeBuilderConfig): Promise<CakeBuilderConfig> {
+    const { error } = await this.db
+      .from('cake_config')
+      .upsert({ id: 'default', data: config, updated_at: new Date().toISOString() });
+    if (error) this.fail('Konfiguráciu tort sa nepodarilo uložiť', error);
+    return config;
   }
 }
 

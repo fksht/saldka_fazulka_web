@@ -247,6 +247,12 @@ const OrderDashboard = () => {
                             </dd>
                           </div>
                         )}
+                        {item.cakeConfiguration.fillingNames && item.cakeConfiguration.fillingNames.length > 0 && (
+                          <div className="flex gap-2">
+                            <dt className="w-24 flex-none font-semibold text-cocoa-500">Doplnky</dt>
+                            <dd className="text-cocoa-800">{item.cakeConfiguration.fillingNames.join(', ')}</dd>
+                          </div>
+                        )}
                         {item.cakeConfiguration.extras && item.cakeConfiguration.extras.length > 0 && (
                           <div className="flex gap-2">
                             <dt className="w-24 flex-none font-semibold text-cocoa-500">Špeciálne</dt>

@@ -136,6 +136,9 @@ const OrderPage = () => {
                                     <li>· Korpus: <strong className="text-cocoa-800">{item.cakeConfiguration.baseName}{item.cakeConfiguration.baseVariant ? ` (${item.cakeConfiguration.baseVariant})` : ''}</strong></li>
                                     <li>· Krémy: <strong className="text-cocoa-800">{item.cakeConfiguration.creamNames.join('; ')}</strong></li>
                                     <li>· Veľkosť: <strong className="text-cocoa-800">{item.cakeConfiguration.sizeName} — {item.cakeConfiguration.sizePortions}</strong></li>
+                                    {item.cakeConfiguration.fillingNames && item.cakeConfiguration.fillingNames.length > 0 && (
+                                      <li>· Doplnky: <strong className="text-cocoa-800">{item.cakeConfiguration.fillingNames.join(', ')}</strong></li>
+                                    )}
                                     {item.cakeConfiguration.extras && item.cakeConfiguration.extras.length > 0 && (
                                       <li>· Špeciálne: <strong className="text-emerald-700">{item.cakeConfiguration.extras.join(', ')}</strong></li>
                                     )}

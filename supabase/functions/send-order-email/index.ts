@@ -58,6 +58,8 @@ type CakeConfiguration = {
   creamNames?: string[];
   sizeName?: string;
   sizePortions?: string;
+  fillingNames?: string[];
+  dietaryNames?: string[];
 };
 type OrderItem = {
   quantity?: number;
@@ -89,7 +91,9 @@ const cakeDescription = (cfg?: CakeConfiguration) => {
   const parts: string[] = [];
   if (cfg.baseName) parts.push(`Korpus: ${cfg.baseName}${cfg.baseVariant ? ` (${cfg.baseVariant})` : ''}`);
   if (cfg.creamNames && cfg.creamNames.length) parts.push(`Krémy: ${cfg.creamNames.join(', ')}`);
+  if (cfg.fillingNames && cfg.fillingNames.length) parts.push(`Doplnky: ${cfg.fillingNames.join(', ')}`);
   if (cfg.sizeName) parts.push(`Veľkosť: ${cfg.sizeName}${cfg.sizePortions ? ` — ${cfg.sizePortions}` : ''}`);
+  if (cfg.dietaryNames && cfg.dietaryNames.length) parts.push(`Špeciálne: ${cfg.dietaryNames.join(', ')}`);
   return parts.join(' · ');
 };
 

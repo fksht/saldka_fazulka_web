@@ -3,6 +3,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   ExternalLink,
+  CakeSlice,
   Images,
   LayoutDashboard,
   Loader2,
@@ -13,6 +14,7 @@ import {
   UploadCloud,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import CakeBuilderManager from '../components/admin/CakeBuilderManager';
 import GalleryManager from '../components/admin/GalleryManager';
 import OrderDashboard from '../components/admin/OrderDashboard';
 import PackageManager from '../components/admin/PackageManager';
@@ -21,12 +23,13 @@ import { SECTION_IMAGES } from '../data/sladkaFazulkaCatalog';
 import { dataService, isSupabaseBackend } from '../services/dataService';
 import { supabase } from '../services/supabaseClient';
 
-type AdminTab = 'orders' | 'products' | 'packages' | 'gallery';
+type AdminTab = 'orders' | 'products' | 'packages' | 'cakes' | 'gallery';
 
 const tabs: Array<{ id: AdminTab; label: string; icon: typeof LayoutDashboard }> = [
   { id: 'orders', label: 'Objednávky', icon: LayoutDashboard },
   { id: 'products', label: 'Produkty', icon: ShoppingBag },
   { id: 'packages', label: 'Balíčky', icon: PackageCheck },
+  { id: 'cakes', label: 'Torty na mieru', icon: CakeSlice },
   { id: 'gallery', label: 'Galéria', icon: Images },
 ];
 
@@ -320,6 +323,7 @@ const AdminPage = () => {
             {activeTab === 'orders' && <OrderDashboard />}
             {activeTab === 'products' && <ProductManager />}
             {activeTab === 'packages' && <PackageManager />}
+            {activeTab === 'cakes' && <CakeBuilderManager />}
             {activeTab === 'gallery' && <GalleryManager />}
           </section>
         </div>
