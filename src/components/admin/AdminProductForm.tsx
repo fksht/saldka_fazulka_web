@@ -43,6 +43,44 @@ const MAX_CHOICES_PER_GROUP = 5;
 const inputClass =
   'w-full rounded-lg border border-cream-200 bg-white px-4 py-3 text-cocoa-900 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100';
 
+type DietaryField = 'vegan' | 'withoutMilk' | 'lactoseFree' | 'glutenFree';
+
+const VERSION_GROUP_LABEL = 'Verzia';
+const VERSION_NAME_BY_FIELD: Record<DietaryField, string> = {
+  vegan: 'Vegánska',
+  withoutMilk: 'Bez mlieka',
+  lactoseFree: 'Bez laktózy',
+  glutenFree: 'Bezlepková',
+};
+const KNOWN_VERSION_NAMES = Object.values(VERSION_NAME_BY_FIELD);
+
+// Keep an editable "Verzia" option group in sync with the product's dietary
+// badges: enabling a badge adds its version (price editable like any option),
+// disabling it removes that version. The whole group disappears when no badge
+// is set. Admin-added custom choices and per-version prices are preserved.
+const syncVersionGroup = (
+  groups: ProductOptionGroup[],
+  badges: Pick<ProductFormValues, DietaryField>,
+): ProductOptionGroup[] => {
+  const desired = (Object.keys(VERSION_NAME_BY_FIELD) as DietaryField[])
+    .filter((field) => badges[field])
+    .map((field) => VERSION_NAME_BY_FIELD[field]);
+  const others = groups.filter((group) => group.label !== VERSION_GROUP_LABEL);
+  if (desired.length === 0) return others;
+
+  const existing = groups.find((group) => group.label === VERSION_GROUP_LABEL);
+  const prev = existing?.choices ?? [];
+  const findPrev = (name: string) => prev.find((choice) => choice.name === name);
+  const klasicka = findPrev('Klasická') ?? { name: 'Klasická' };
+  const versionChoices = desired.map((name) => findPrev(name) ?? { name });
+  const custom = prev.filter((choice) => choice.name !== 'Klasická' && !KNOWN_VERSION_NAMES.includes(choice.name));
+  const versionGroup: ProductOptionGroup = {
+    label: VERSION_GROUP_LABEL,
+    choices: [klasicka, ...versionChoices, ...custom],
+  };
+  return existing ? groups.map((g) => (g.label === VERSION_GROUP_LABEL ? versionGroup : g)) : [...others, versionGroup];
+};
+
 const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps) => {
   const [values, setValues] = useState<ProductFormValues>(() => {
     if (!product) return emptyValues;
@@ -63,6 +101,14 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
 
   const mutateGroups = (mutator: (groups: ProductOptionGroup[]) => ProductOptionGroup[]) => {
     setValues((current) => ({ ...current, optionGroups: mutator(current.optionGroups ?? []) }));
+  };
+
+  // Toggling a dietary badge also adds/removes its version in the "Verzia" group.
+  const toggleDietaryBadge = (field: DietaryField) => {
+    setValues((current) => {
+      const nextBadges = { ...current, [field]: !current[field] };
+      return { ...current, [field]: !current[field], optionGroups: syncVersionGroup(current.optionGroups ?? [], nextBadges) };
+    });
   };
 
   const addGroup = () => {
@@ -478,7 +524,7 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
                   <button
                     key={badge.field}
                     type="button"
-                    onClick={() => updateField(badge.field, !active)}
+                    onClick={() => toggleDietaryBadge(badge.field)}
                     title={badge.title}
                     className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-semibold transition ${
                       active

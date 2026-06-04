@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Product, SelectedOption } from '../../types';
 import { formatPrice } from '../../utils/format';
 import { isCustomPriceType } from '../../utils/orderPricing';
-import { formatPriceDelta, getCustomerOptionGroups, getEffectiveUnitPrice } from '../../utils/productOptions';
+import { formatPriceDelta, getEffectiveUnitPrice, getProductOptionGroups } from '../../utils/productOptions';
 import { Button } from '../ui/Button';
 
 type QuantityPickerModalProps = {
@@ -17,7 +17,7 @@ const MAX_QUANTITY = 999;
 
 const QuantityPickerModal = ({ product, onClose, onConfirm }: QuantityPickerModalProps) => {
   const min = product?.minimumOrderQuantity ?? 1;
-  const optionGroups = useMemo(() => (product ? getCustomerOptionGroups(product) : []), [product]);
+  const optionGroups = useMemo(() => (product ? getProductOptionGroups(product) : []), [product]);
   const [quantity, setQuantity] = useState<number>(min);
   const [inputValue, setInputValue] = useState<string>(String(min));
   // One selected choice index per option group.
@@ -28,7 +28,7 @@ const QuantityPickerModal = ({ product, onClose, onConfirm }: QuantityPickerModa
     const start = product.minimumOrderQuantity ?? 1;
     setQuantity(start);
     setInputValue(String(start));
-    setSelectedIndices(getCustomerOptionGroups(product).map(() => 0));
+    setSelectedIndices(getProductOptionGroups(product).map(() => 0));
   }, [product]);
 
   useEffect(() => {
