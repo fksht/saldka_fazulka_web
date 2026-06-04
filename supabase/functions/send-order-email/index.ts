@@ -18,9 +18,11 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const ORDER_EMAIL_TO = Deno.env.get('ORDER_EMAIL_TO') ?? 'sladkafazulka@gmail.com';
 const ORDER_EMAIL_FROM = Deno.env.get('ORDER_EMAIL_FROM') ?? 'Sladká fazuľka <onboarding@resend.dev>';
 const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET') ?? '';
-const SITE_ORIGIN = (Deno.env.get('SITE_ORIGIN') ?? 'https://fksht.github.io').replace(/\/$/, '');
-const LOGO_URL =
-  Deno.env.get('LOGO_URL') ?? 'https://fksht.github.io/saldka_fazulka_web/images/sladka-fazulka/logo.png';
+// Production domain. Images are served here directly (HTTP 200, no redirect),
+// unlike the fksht.github.io/<repo> path which 301-redirects and breaks in some
+// email clients.
+const SITE_ORIGIN = (Deno.env.get('SITE_ORIGIN') ?? 'https://sladkafazulka.sk').replace(/\/$/, '');
+const LOGO_URL = Deno.env.get('LOGO_URL') ?? `${SITE_ORIGIN}/images/sladka-fazulka/logo.png`;
 const CONTACT_EMAIL = 'sladkafazulka@gmail.com';
 const CONTACT_PHONE = '+421 911 410 544';
 
@@ -33,15 +35,11 @@ const isEmail = (value: unknown): value is string =>
 const fmtEur = (n: number) => `${n.toFixed(2).replace('.', ',')} €`;
 const isCustomPrice = (pt?: string) => pt === 'from' || pt === 'individual' || pt === 'on_request';
 
-// Base for site-relative image paths. Derived from LOGO_URL (which is known to
-// load in email) so it includes any repo subpath; falls back to SITE_ORIGIN.
-const ASSET_BASE = LOGO_URL.includes('/images/') ? LOGO_URL.split('/images/')[0] : SITE_ORIGIN;
-
 // Order items store a root-relative image path; make it absolute for email.
 const absImageUrl = (url?: string) => {
   if (!url) return '';
   if (url.startsWith('http')) return url;
-  if (url.startsWith('/')) return ASSET_BASE + url;
+  if (url.startsWith('/')) return SITE_ORIGIN + url;
   return ''; // data: URLs or unknown — skip
 };
 
