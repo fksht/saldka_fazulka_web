@@ -114,6 +114,148 @@ const OptionListEditor = ({
   );
 };
 
+// ---- Creams grouped by category ----
+
+type CreamGroupsEditorProps = {
+  creams: CakeBuilderOption[];
+  onChange: (next: CakeBuilderOption[]) => void;
+};
+
+const DEFAULT_CREAM_GROUP = 'Krémy';
+const groupOf = (cream: CakeBuilderOption) => cream.group?.trim() || DEFAULT_CREAM_GROUP;
+
+const CreamGroupsEditor = ({ creams, onChange }: CreamGroupsEditorProps) => {
+  // Distinct group labels in first-seen order.
+  const groups: string[] = [];
+  creams.forEach((cream) => {
+    const label = groupOf(cream);
+    if (!groups.includes(label)) groups.push(label);
+  });
+
+  const renameGroup = (oldLabel: string, newLabel: string) =>
+    onChange(creams.map((cream) => (groupOf(cream) === oldLabel ? { ...cream, group: newLabel } : cream)));
+
+  const updateCream = (id: string, patch: Partial<CakeBuilderOption>) =>
+    onChange(creams.map((cream) => (cream.id === id ? { ...cream, ...patch } : cream)));
+
+  const removeCream = (id: string) => onChange(creams.filter((cream) => cream.id !== id));
+
+  const addCreamToGroup = (label: string) =>
+    onChange([...creams, { id: createId('cream'), name: '', group: label }]);
+
+  const addGroup = () => {
+    let name = 'Nová skupina';
+    let i = 1;
+    while (groups.includes(name)) {
+      i += 1;
+      name = `Nová skupina ${i}`;
+    }
+    onChange([...creams, { id: createId('cream'), name: '', group: name }]);
+  };
+
+  const removeGroup = (label: string) => {
+    if (!window.confirm(`Odstrániť celú skupinu „${label}“ aj s jej krémami?`)) return;
+    onChange(creams.filter((cream) => groupOf(cream) !== label));
+  };
+
+  return (
+    <section className="rounded-2xl border border-cream-200 bg-white p-5 shadow-sm">
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <h3 className="font-display text-xl font-semibold text-cocoa-950">Krémy</h3>
+          <p className="mt-0.5 text-xs text-cocoa-500">
+            Krémy sú zoradené do skupín (kategórií). Premenuj skupinu v jej hlavičke, pridaj krém do skupiny alebo pridaj
+            novú skupinu. Drahší krém = príplatok.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={addGroup}
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-cream-300 bg-white px-3 py-1.5 text-xs font-semibold text-cocoa-700 transition hover:border-rose-300 hover:bg-rose-50"
+        >
+          <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+          Pridať skupinu
+        </button>
+      </div>
+
+      {groups.length === 0 ? (
+        <p className="text-xs italic text-cocoa-500">Zatiaľ žiadne krémy — pridaj skupinu.</p>
+      ) : (
+        <div className="space-y-4">
+          {groups.map((label) => {
+            const items = creams.filter((cream) => groupOf(cream) === label);
+            return (
+              <div key={label} className="rounded-xl border border-cream-200 bg-cream-50/50 p-3">
+                <div className="mb-2 flex items-center gap-2">
+                  <input
+                    value={label}
+                    onChange={(event) => renameGroup(label, event.target.value)}
+                    className={`${inputClass} flex-1 font-semibold`}
+                    placeholder="Názov skupiny (napr. Svieže)"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeGroup(label)}
+                    className="inline-flex h-9 shrink-0 items-center gap-1 rounded-full px-3 text-xs font-semibold text-cocoa-500 transition hover:bg-red-50 hover:text-red-700"
+                    title="Odstrániť skupinu"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                    Skupina
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {items.map((cream) => (
+                    <div key={cream.id} className="grid items-center gap-2 sm:grid-cols-[1fr_6.5rem_2.25rem]">
+                      <input
+                        value={cream.name}
+                        onChange={(event) => updateCream(cream.id, { name: event.target.value })}
+                        className={inputClass}
+                        placeholder="Napr. Pistáciový krém"
+                      />
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={cream.priceDelta ?? ''}
+                          onChange={(event) => updateCream(cream.id, { priceDelta: parseNumber(event.target.value) })}
+                          className={`${inputClass} pr-6 text-right`}
+                          placeholder="0"
+                          title="Príplatok"
+                        />
+                        <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-cocoa-400">
+                          €
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeCream(cream.id)}
+                        className="inline-flex h-9 w-9 items-center justify-center justify-self-end rounded-full text-cocoa-500 transition hover:bg-red-50 hover:text-red-700"
+                        title="Odstrániť krém"
+                      >
+                        <span className="sr-only">Odstrániť krém</span>
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => addCreamToGroup(label)}
+                    className="inline-flex items-center gap-1 rounded-full border border-cream-300 bg-white px-3 py-1.5 text-xs font-semibold text-cocoa-700 transition hover:border-rose-300 hover:bg-rose-50"
+                  >
+                    <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                    Pridať krém
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      <p className="mt-2 text-xs text-cocoa-500">Príplatok sa pripočíta k cene torty. Nechaj prázdne = 0 €.</p>
+    </section>
+  );
+};
+
 // ---- Size list ----
 
 type SizeListEditorProps = {
@@ -288,16 +430,7 @@ const CakeBuilderManager = () => {
         namePlaceholder="Napr. Vanilkový"
       />
 
-      <OptionListEditor
-        title="Krémy"
-        description="Príchute krémov. Skupina zoskupí krémy v konfigurátore (napr. Sviеže, Orieškové). Drahší krém = príplatok."
-        options={config.creams}
-        onChange={(creams) => patch({ creams })}
-        idPrefix="cream"
-        priceLabel="Príplatok"
-        withGroup
-        namePlaceholder="Napr. Pistáciový krém"
-      />
+      <CreamGroupsEditor creams={config.creams} onChange={(creams) => patch({ creams })} />
 
       <OptionListEditor
         title="Doplnky vnútri torty"
@@ -321,17 +454,7 @@ const CakeBuilderManager = () => {
 
       <section className="rounded-2xl border border-cream-200 bg-white p-5 shadow-sm">
         <h3 className="font-display text-xl font-semibold text-cocoa-950">Nastavenia</h3>
-        <label className="mt-3 block max-w-xs">
-          <span className="mb-1 block text-sm font-semibold text-cocoa-700">Max. počet krémov</span>
-          <input
-            type="number"
-            min="1"
-            value={config.maxCreams}
-            onChange={(event) => patch({ maxCreams: Math.max(1, parseNumber(event.target.value) ?? 1) })}
-            className={inputClass}
-          />
-        </label>
-        <label className="mt-4 block">
+        <label className="mt-3 block">
           <span className="mb-1 block text-sm font-semibold text-cocoa-700">
             Poznámky pod konfigurátorom (každý riadok = jedna poznámka)
           </span>

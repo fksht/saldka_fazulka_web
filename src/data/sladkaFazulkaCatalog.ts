@@ -637,7 +637,6 @@ const slugifyId = (value: string) =>
 // until the admin edits it. All surcharges (priceDelta) start unset (= 0 €) so
 // the owner decides each one. Fillings are seeded from the common cukráreň list.
 export const DEFAULT_CAKE_CONFIG: CakeBuilderConfig = {
-  maxCreams: 3,
   notes: CAKE_NOTES,
   sizes: CAKE_SIZES.map((size) => ({
     id: size.id,

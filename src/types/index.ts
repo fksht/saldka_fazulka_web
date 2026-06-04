@@ -180,7 +180,6 @@ export interface CakeBuilderConfig {
   creams: CakeBuilderOption[];
   fillings: CakeBuilderOption[];
   dietary: CakeBuilderOption[];
-  maxCreams: number;
   notes: string[];
 }
 

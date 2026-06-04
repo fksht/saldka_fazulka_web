@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
-import { Check, Loader2, Plus, ShoppingBasket, X } from 'lucide-react';
+import { Check, ImagePlus, Loader2, Plus, ShoppingBasket, X } from 'lucide-react';
 import { CakeBuilderConfig, CakeBuilderOption, CakeConfiguration } from '../../types';
 import { dataService } from '../../services/dataService';
 import { formatCurrency } from '../../utils/format';
@@ -86,8 +86,6 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
     };
     reader.readAsDataURL(file);
   };
-
-  const maxCreams = config?.maxCreams ?? 3;
 
   const selectedBase = useMemo(
     () => config?.bases.find((b) => b.id === baseId),
@@ -233,7 +231,7 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
             </span>
             <h3 className="font-display text-2xl font-semibold text-cocoa-950">Krém</h3>
             <span className="ml-auto rounded-full bg-cream-100 px-3 py-1 text-xs font-bold text-cocoa-700">
-              Vybrané {creamIds.length} / max {maxCreams}
+              Vybrané {creamIds.length}
             </span>
           </div>
           <div className="space-y-7">
@@ -248,7 +246,7 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
                       <button
                         key={cream.id}
                         type="button"
-                        onClick={() => toggleId(setCreamIds, cream.id, maxCreams)}
+                        onClick={() => toggleId(setCreamIds, cream.id)}
                         className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm transition ${
                           active
                             ? 'border-rose-300 bg-rose-50/70 text-cocoa-900 shadow-sm'
@@ -430,12 +428,11 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
                 </button>
               </div>
             ) : (
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleInspirationImage}
-                className="block w-full text-sm text-cocoa-600 file:mr-4 file:rounded-full file:border-0 file:bg-cocoa-800 file:px-4 file:py-2 file:font-semibold file:text-white hover:file:bg-cocoa-900"
-              />
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-cocoa-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cocoa-900">
+                <ImagePlus className="h-4 w-4" aria-hidden="true" />
+                Nahrať fotku
+                <input type="file" accept="image/*" onChange={handleInspirationImage} className="sr-only" />
+              </label>
             )}
             {imageError && <p className="mt-2 text-sm font-semibold text-red-600">{imageError}</p>}
           </div>
@@ -457,7 +454,7 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
           <div>
             <p className="text-[11px] font-bold uppercase tracking-wider text-cocoa-400">Krém</p>
             {selectedCreams.length === 0 ? (
-              <p className="italic text-cocoa-500">Vyberte 1 – {maxCreams} krémy</p>
+              <p className="italic text-cocoa-500">Vyberte aspoň jeden krém</p>
             ) : (
               <ul className="space-y-1 text-sm text-cocoa-700">
                 {selectedCreams.map((cream) => (
