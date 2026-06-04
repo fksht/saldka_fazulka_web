@@ -2,7 +2,7 @@ import { ShoppingBasket, Sparkles, X } from 'lucide-react';
 import { useEffect } from 'react';
 import { Product } from '../../types';
 import { formatPrice } from '../../utils/format';
-import { formatPriceDelta, getProductOptionGroups } from '../../utils/productOptions';
+import { formatPriceDelta, getCustomerOptionGroups } from '../../utils/productOptions';
 import { Button } from '../ui/Button';
 import AllergenBadges from './AllergenBadges';
 import DietaryBadges from './DietaryBadges';
@@ -25,7 +25,7 @@ const ProductModal = ({ product, onClose, onAddToCart }: ProductModalProps) => {
 
   if (!product) return null;
 
-  const optionGroups = getProductOptionGroups(product);
+  const optionGroups = getCustomerOptionGroups(product);
 
   return (
     <div

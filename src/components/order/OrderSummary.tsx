@@ -63,6 +63,9 @@ const OrderSummary = ({ items, title = 'Rekapitulácia', className = '' }: Order
                     <strong className="text-cocoa-800">{item.tastingDetails.selections.join('; ')}</strong>
                   </li>
                 )}
+                {item.tastingDetails.versions && item.tastingDetails.versions.length > 0 && (
+                  <li>· Verzie: <strong className="text-emerald-700">{item.tastingDetails.versions.join(', ')}</strong></li>
+                )}
                 {item.tastingDetails.preferredDate && (
                   <li>· Termín: <strong className="text-cocoa-800">{item.tastingDetails.preferredDate}</strong></li>
                 )}

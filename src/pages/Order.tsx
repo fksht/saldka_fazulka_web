@@ -123,6 +123,9 @@ const OrderPage = () => {
                                         <strong className="text-cocoa-800">{item.tastingDetails.selections.join('; ')}</strong>
                                       </li>
                                     )}
+                                    {item.tastingDetails.versions && item.tastingDetails.versions.length > 0 && (
+                                      <li>· Verzie: <strong className="text-emerald-700">{item.tastingDetails.versions.join(', ')}</strong></li>
+                                    )}
                                     {item.tastingDetails.preferredDate && (
                                       <li>· Preferovaný termín: <strong className="text-cocoa-800">{item.tastingDetails.preferredDate}</strong></li>
                                     )}

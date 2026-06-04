@@ -14,6 +14,8 @@ type TastingBoxModalProps = {
 const MAX_CREAM_SELECTIONS = 3;
 const MAX_DESSERT_SELECTIONS = 12;
 
+const DIETARY_VERSIONS = ['Vegánska', 'Bez mlieka', 'Bez laktózy', 'Bezlepková'];
+
 const todayInputValue = () => {
   const now = new Date();
   const offset = now.getTimezoneOffset() * 60_000;
@@ -25,15 +27,22 @@ const TastingBoxModal = ({ tasting, onClose, onConfirm }: TastingBoxModalProps) 
   const isDesserts = tasting?.id === 'tasting-zakusky';
 
   const [selectedSelections, setSelectedSelections] = useState<string[]>([]);
+  const [selectedVersions, setSelectedVersions] = useState<string[]>([]);
   const [note, setNote] = useState('');
   const [preferredDate, setPreferredDate] = useState('');
 
   useEffect(() => {
     if (!tasting) return;
     setSelectedSelections([]);
+    setSelectedVersions([]);
     setNote('');
     setPreferredDate('');
   }, [tasting]);
+
+  const toggleVersion = (version: string) =>
+    setSelectedVersions((current) =>
+      current.includes(version) ? current.filter((v) => v !== version) : [...current, version],
+    );
 
   useEffect(() => {
     if (!tasting) return;
@@ -85,6 +94,7 @@ const TastingBoxModal = ({ tasting, onClose, onConfirm }: TastingBoxModalProps) 
     onConfirm(tasting, {
       selections: selectedSelections.length > 0 ? selectedSelections : undefined,
       selectionLabel: selectedSelections.length > 0 ? selectionLabel : undefined,
+      versions: selectedVersions.length > 0 ? selectedVersions : undefined,
       preferredDate: preferredDate || undefined,
       note: note.trim() || undefined,
     });
@@ -207,6 +217,32 @@ const TastingBoxModal = ({ tasting, onClose, onConfirm }: TastingBoxModalProps) 
               </div>
             </div>
           )}
+
+          <div>
+            <p className="text-sm font-semibold text-cocoa-700">Špeciálne verzie</p>
+            <p className="mt-1 text-xs text-cocoa-500">
+              Voliteľné. Označte, ak chcete dezerty pripraviť v niektorej z verzií (konečnú cenu a výber doladíme spolu).
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {DIETARY_VERSIONS.map((version) => {
+                const isSelected = selectedVersions.includes(version);
+                return (
+                  <button
+                    key={version}
+                    type="button"
+                    onClick={() => toggleVersion(version)}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                      isSelected
+                        ? 'border-rose-400 bg-rose-50 text-rose-700 ring-2 ring-rose-100'
+                        : 'border-cream-300 bg-white text-cocoa-700 hover:border-rose-300 hover:bg-rose-50'
+                    }`}
+                  >
+                    {version}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">

@@ -33,11 +33,15 @@ const isEmail = (value: unknown): value is string =>
 const fmtEur = (n: number) => `${n.toFixed(2).replace('.', ',')} €`;
 const isCustomPrice = (pt?: string) => pt === 'from' || pt === 'individual' || pt === 'on_request';
 
+// Base for site-relative image paths. Derived from LOGO_URL (which is known to
+// load in email) so it includes any repo subpath; falls back to SITE_ORIGIN.
+const ASSET_BASE = LOGO_URL.includes('/images/') ? LOGO_URL.split('/images/')[0] : SITE_ORIGIN;
+
 // Order items store a root-relative image path; make it absolute for email.
 const absImageUrl = (url?: string) => {
   if (!url) return '';
   if (url.startsWith('http')) return url;
-  if (url.startsWith('/')) return SITE_ORIGIN + url;
+  if (url.startsWith('/')) return ASSET_BASE + url;
   return ''; // data: URLs or unknown — skip
 };
 

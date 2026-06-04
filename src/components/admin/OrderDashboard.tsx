@@ -315,6 +315,11 @@ const OrderDashboard = () => {
                         {item.tastingDetails.selections.join('; ')}
                       </p>
                     )}
+                    {item.tastingDetails?.versions && item.tastingDetails.versions.length > 0 && (
+                      <p className="mt-1">
+                        <span className="font-semibold">Verzie:</span> {item.tastingDetails.versions.join(', ')}
+                      </p>
+                    )}
                     {item.tastingDetails?.preferredDate && (
                       <p className="mt-1">
                         <span className="font-semibold">Preferovaný termín:</span> {item.tastingDetails.preferredDate}

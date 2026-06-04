@@ -192,6 +192,8 @@ export type OrderStatus = 'new' | 'contacted' | 'confirmed' | 'completed' | 'del
 export interface TastingDetails {
   selections?: string[];
   selectionLabel?: string;
+  /** Requested dietary versions (Vegánska, Bez mlieka, …). */
+  versions?: string[];
   preferredDate?: string;
   note?: string;
 }
