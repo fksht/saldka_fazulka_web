@@ -9,6 +9,16 @@
 // Triggered by a Database Webhook on INSERT into public.orders, where
 // `record.data` is the full order object.
 //
+// IMPORTANT — "Verify JWT" MUST be OFF for this function. It is called by a
+// Database Webhook (not an authenticated user), so it carries no Supabase JWT;
+// with JWT verification ON the gateway rejects every call with 401 before this
+// code even runs. Requests are instead authenticated by the WEBHOOK_SECRET
+// header checked below. Redeploying re-enables "Verify JWT" by default — after
+// every deploy, turn it OFF again:
+//   Dashboard → Edge Functions → send-order-email → Details/Settings →
+//   "Verify JWT" (or "Enforce JWT verification") → OFF
+//   CLI: supabase functions deploy send-order-email --no-verify-jwt
+//
 // Function secrets (Dashboard → Edge Functions → Manage secrets):
 //   RESEND_API_KEY, ORDER_EMAIL_TO, ORDER_EMAIL_FROM, WEBHOOK_SECRET
 //   SITE_ORIGIN (optional) — base origin for product/logo image URLs
