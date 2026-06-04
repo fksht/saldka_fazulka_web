@@ -54,6 +54,12 @@ export interface Product {
   /** @deprecated See optionGroups. */
   variantLabel?: string;
   vegan?: boolean;
+  /** Dietary badge: bez mlieka (milk-free). */
+  withoutMilk?: boolean;
+  /** Dietary badge: bez laktózy (lactose-free). */
+  lactoseFree?: boolean;
+  /** Dietary badge: bezlepkové (gluten-free). */
+  glutenFree?: boolean;
   minimumOrderQuantity?: number;
   available: boolean;
   featured: boolean;

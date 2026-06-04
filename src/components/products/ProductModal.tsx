@@ -5,7 +5,7 @@ import { formatPrice } from '../../utils/format';
 import { formatPriceDelta, getProductOptionGroups } from '../../utils/productOptions';
 import { Button } from '../ui/Button';
 import AllergenBadges from './AllergenBadges';
-import VeganBadge from './VeganBadge';
+import DietaryBadges from './DietaryBadges';
 
 type ProductModalProps = {
   product: Product | null;
@@ -40,11 +40,7 @@ const ProductModal = ({ product, onClose, onAddToCart }: ProductModalProps) => {
       >
         <div className="grid lg:grid-cols-[1.05fr_0.95fr]">
           <div className="relative flex items-center justify-center bg-cream-50 p-6">
-            {product.vegan && (
-              <div className="pointer-events-none absolute right-4 top-4 z-10">
-                <VeganBadge size={64} />
-              </div>
-            )}
+            <DietaryBadges product={product} size={58} className="pointer-events-none absolute right-4 top-4 z-10" />
             {product.imageUrl ? (
               <img src={product.imageUrl} alt={product.name} className="max-h-[420px] w-auto object-contain" />
             ) : (

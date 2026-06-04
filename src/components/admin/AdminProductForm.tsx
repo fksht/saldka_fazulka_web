@@ -4,8 +4,9 @@ import { CATEGORIES } from '../../services/mockData';
 import { PriceType, Product, ProductFormValues, ProductOptionGroup } from '../../types';
 import { slugify } from '../../services/dataService';
 import { uploadImage } from '../../services/storage';
-import { ALLERGENS } from '../../data/sladkaFazulkaCatalog';
+import { ALLERGENS, assetPath } from '../../data/sladkaFazulkaCatalog';
 import { getProductOptionGroups } from '../../utils/productOptions';
+import { DIETARY_BADGES } from '../products/DietaryBadges';
 import { Button } from '../ui/Button';
 
 type AdminProductFormProps = {
@@ -28,6 +29,9 @@ const emptyValues: ProductFormValues = {
   tags: [],
   optionGroups: [],
   vegan: false,
+  withoutMilk: false,
+  lactoseFree: false,
+  glutenFree: false,
   minimumOrderQuantity: undefined,
   available: true,
   featured: false,
@@ -465,6 +469,32 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
             )}
           </div>
 
+          <div className="sm:col-span-2">
+            <span className="mb-2 block text-sm font-semibold text-cocoa-700">Odznaky (zobrazia sa na produkte)</span>
+            <div className="flex flex-wrap gap-2">
+              {DIETARY_BADGES.map((badge) => {
+                const active = Boolean(values[badge.field]);
+                return (
+                  <button
+                    key={badge.field}
+                    type="button"
+                    onClick={() => updateField(badge.field, !active)}
+                    title={badge.title}
+                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-semibold transition ${
+                      active
+                        ? 'border-rose-400 bg-rose-50 text-rose-700'
+                        : 'border-cream-200 bg-cream-50 text-cocoa-600 hover:border-rose-200'
+                    }`}
+                  >
+                    <img src={assetPath(badge.src)} alt="" className="h-6 w-6 object-contain" />
+                    {badge.title}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-1 text-xs text-cocoa-500">Klikni na odznak, ktorý chceš pri produkte zobraziť.</p>
+          </div>
+
           <div className="flex flex-wrap gap-3 sm:col-span-2">
             <label className="inline-flex items-center gap-2 rounded-full border border-cream-200 bg-cream-50 px-4 py-2 text-sm font-semibold text-cocoa-700">
               <input type="checkbox" checked={values.available} onChange={(event) => updateField('available', event.target.checked)} className="h-4 w-4 rounded border-cream-300 text-rose-600 focus:ring-rose-200" />
@@ -473,10 +503,6 @@ const AdminProductForm = ({ product, onSubmit, onCancel }: AdminProductFormProps
             <label className="inline-flex items-center gap-2 rounded-full border border-cream-200 bg-cream-50 px-4 py-2 text-sm font-semibold text-cocoa-700">
               <input type="checkbox" checked={values.featured} onChange={(event) => updateField('featured', event.target.checked)} className="h-4 w-4 rounded border-cream-300 text-rose-600 focus:ring-rose-200" />
               Odporúčané na úvode
-            </label>
-            <label className="inline-flex items-center gap-2 rounded-full border border-cream-200 bg-cream-50 px-4 py-2 text-sm font-semibold text-cocoa-700">
-              <input type="checkbox" checked={values.vegan ?? false} onChange={(event) => updateField('vegan', event.target.checked)} className="h-4 w-4 rounded border-cream-300 text-emerald-600 focus:ring-emerald-200" />
-              Vegánsky (zobrazí sa zelený VEGAN odznak)
             </label>
           </div>
         </div>

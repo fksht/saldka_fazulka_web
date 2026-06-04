@@ -2,7 +2,7 @@ import { Info, ShoppingBasket } from 'lucide-react';
 import { Product } from '../../types';
 import { formatPrice } from '../../utils/format';
 import AllergenBadges from './AllergenBadges';
-import VeganBadge from './VeganBadge';
+import DietaryBadges from './DietaryBadges';
 
 type ProductCardProps = {
   product: Product;
@@ -49,11 +49,7 @@ const ProductCard = ({ product, onSelect, onAddToCart }: ProductCardProps) => {
           ))}
         </div>
       )}
-      {product.vegan && (
-        <div className="pointer-events-none absolute right-3 top-3">
-          <VeganBadge size={52} />
-        </div>
-      )}
+      <DietaryBadges product={product} size={46} className="pointer-events-none absolute right-3 top-3" />
       {!product.available && (
         <div className="absolute inset-0 flex items-center justify-center bg-cocoa-950/55">
           <span className="rounded-full bg-white px-4 py-2 text-sm font-bold text-cocoa-900">Momentálne nedostupné</span>
