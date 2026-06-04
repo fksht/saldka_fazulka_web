@@ -31,16 +31,23 @@ const DietaryBadges = ({ product, size = 52, className = '' }: DietaryBadgesProp
   return (
     <div className={`flex flex-col items-end gap-1.5 ${className}`}>
       {active.map((badge) => (
-        <img
-          key={badge.field}
-          src={assetPath(badge.src)}
-          alt={badge.alt}
-          title={badge.title}
-          width={size}
-          height={size}
-          className="drop-shadow-sm"
-          style={{ width: size, height: size, objectFit: 'contain' }}
-        />
+        <div key={badge.field} className="group/badge pointer-events-auto relative">
+          <img
+            src={assetPath(badge.src)}
+            alt={badge.alt}
+            width={size}
+            height={size}
+            className="drop-shadow-sm"
+            style={{ width: size, height: size, objectFit: 'contain' }}
+          />
+          {/* Instant hover label — placed to the left so it stays on-card (badges sit at the right edge). */}
+          <span
+            role="tooltip"
+            className="pointer-events-none absolute right-full top-1/2 mr-2 -translate-y-1/2 whitespace-nowrap rounded-md bg-cocoa-900/95 px-2 py-1 text-xs font-semibold text-white opacity-0 shadow-md transition-opacity duration-150 group-hover/badge:opacity-100"
+          >
+            {badge.title}
+          </span>
+        </div>
       ))}
     </div>
   );
