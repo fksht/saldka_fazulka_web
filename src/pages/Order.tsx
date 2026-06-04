@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight, CheckCircle2, Heart, Minus, Plus, ShoppingBasket, Trash2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Heart, Minus, Pencil, Plus, ShoppingBasket, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import OrderForm from '../components/forms/OrderForm';
 import { Button, ButtonLink } from '../components/ui/Button';
@@ -181,15 +181,24 @@ const OrderPage = () => {
                           </div>
 
                           {item.kind === 'custom-cake' && (
-                            <label className="mt-4 block">
-                              <span className="mb-1 block text-sm font-semibold text-cocoa-700">Poznámka k torte</span>
-                              <input
-                                value={item.note ?? ''}
-                                onChange={(event) => updateNote(item.productId, event.target.value)}
-                                className="w-full rounded-lg border border-cream-200 bg-cream-50 px-4 py-3 text-sm text-cocoa-900 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
-                                placeholder="Napr. farba dekoru, téma, text na tortu…"
-                              />
-                            </label>
+                            <div className="mt-4">
+                              <Link
+                                to={`/torty-na-mieru?edit=${encodeURIComponent(item.productId)}`}
+                                className="inline-flex items-center gap-2 rounded-full border border-cream-200 bg-cream-50 px-4 py-2 text-sm font-semibold text-cocoa-700 transition hover:border-rose-300 hover:bg-rose-50"
+                              >
+                                <Pencil className="h-4 w-4" aria-hidden="true" />
+                                Upraviť tortu
+                              </Link>
+                              <label className="mt-4 block">
+                                <span className="mb-1 block text-sm font-semibold text-cocoa-700">Poznámka k torte</span>
+                                <input
+                                  value={item.note ?? ''}
+                                  onChange={(event) => updateNote(item.productId, event.target.value)}
+                                  className="w-full rounded-lg border border-cream-200 bg-cream-50 px-4 py-3 text-sm text-cocoa-900 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
+                                  placeholder="Napr. farba dekoru, téma, text na tortu…"
+                                />
+                              </label>
+                            </div>
                           )}
                         </div>
                       ))}

@@ -14,6 +14,7 @@ type CartContextValue = {
   addWeddingBox: (box: WeddingBox) => void;
   addTastingBox: (tasting: TastingBox, details?: TastingDetails) => void;
   addCustomCake: (config: CakeConfiguration) => void;
+  updateCustomCake: (itemId: string, config: CakeConfiguration) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   updateNote: (productId: string, note: string) => void;
@@ -216,6 +217,27 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     [commit],
   );
 
+  const updateCustomCake = useCallback(
+    (itemId: string, config: CakeConfiguration) => {
+      const isIndividual = config.priceType === 'individual' || config.totalPrice == null;
+      commit((current) =>
+        current.map((item) =>
+          item.productId === itemId
+            ? {
+                ...item,
+                productName: `Torta na mieru — ${config.sizeName}`,
+                unitPrice: isIndividual ? null : config.totalPrice ?? config.sizePriceFrom,
+                priceType: isIndividual ? 'individual' : 'from',
+                cakeConfiguration: config,
+                imageUrl: config.inspirationImage ?? SECTION_IMAGES.cake3tier,
+              }
+            : item,
+        ),
+      );
+    },
+    [commit],
+  );
+
   const removeItem = useCallback(
     (productId: string) => {
       commit((current) => current.filter((item) => item.productId !== productId));
@@ -262,12 +284,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       addWeddingBox,
       addTastingBox,
       addCustomCake,
+      updateCustomCake,
       removeItem,
       updateQuantity,
       updateNote,
       clearCart,
     };
-  }, [addCustomCake, addPackage, addProduct, addTastingBox, addWeddingBox, clearCart, items, removeItem, updateNote, updateQuantity]);
+  }, [addCustomCake, updateCustomCake, addPackage, addProduct, addTastingBox, addWeddingBox, clearCart, items, removeItem, updateNote, updateQuantity]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

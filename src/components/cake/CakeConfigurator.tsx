@@ -9,6 +9,9 @@ import { Button } from '../ui/Button';
 
 type CakeConfiguratorProps = {
   onAdd: (config: CakeConfiguration) => void;
+  /** When set, the builder preloads these selections (editing an existing cake). */
+  initialConfig?: CakeConfiguration | null;
+  submitLabel?: string;
 };
 
 const stepBadge = (n: number, label: string) => (
@@ -36,7 +39,7 @@ const sizePriceLabel = (price: number | null, priceType?: string) => {
   return `${priceType === 'from' ? 'od ' : ''}${formatCurrency(price)}`;
 };
 
-const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
+const CakeConfigurator = ({ onAdd, initialConfig, submitLabel }: CakeConfiguratorProps) => {
   const [config, setConfig] = useState<CakeBuilderConfig | null>(null);
   const [baseId, setBaseId] = useState<string>('');
   const [creamIds, setCreamIds] = useState<string[]>([]);
@@ -57,14 +60,26 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
     void dataService.getCakeConfig().then((loaded) => {
       if (!active) return;
       setConfig(loaded);
-      setBaseId(loaded.bases[0]?.id ?? '');
-      // Default to the second size if present (a small standard cake), else the first.
-      setSizeId(loaded.sizes[1]?.id ?? loaded.sizes[0]?.id ?? '');
+      if (initialConfig) {
+        // Editing an existing cake — restore the previous selections.
+        setBaseId(initialConfig.baseId || loaded.bases[0]?.id || '');
+        setCreamIds(initialConfig.creamIds ?? []);
+        setSizeId(initialConfig.sizeId || loaded.sizes[1]?.id || loaded.sizes[0]?.id || '');
+        setFillingIds(initialConfig.fillingIds ?? []);
+        setDietaryIds(initialConfig.dietaryIds ?? []);
+        setNote(initialConfig.note ?? '');
+        setInspirationUrl(initialConfig.inspirationUrl ?? '');
+        setInspirationImage(initialConfig.inspirationImage);
+      } else {
+        setBaseId(loaded.bases[0]?.id ?? '');
+        // Default to the second size if present (a small standard cake), else the first.
+        setSizeId(loaded.sizes[1]?.id ?? loaded.sizes[0]?.id ?? '');
+      }
     });
     return () => {
       active = false;
     };
-  }, []);
+  }, [initialConfig]);
 
   const handleInspirationImage = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -163,7 +178,9 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
       sizePortions: selectedSize.portions,
       sizePriceFrom: selectedSize.price,
       fillingNames: fillingNames.length > 0 ? fillingNames : undefined,
+      fillingIds: selectedFillings.length > 0 ? selectedFillings.map((f) => f.id) : undefined,
       dietaryNames: dietaryNames.length > 0 ? dietaryNames : undefined,
+      dietaryIds: selectedDietary.length > 0 ? selectedDietary.map((d) => d.id) : undefined,
       extras: dietaryNames.length > 0 ? dietaryNames : undefined,
       totalPrice: total,
       priceType: selectedSize.priceType,
@@ -504,7 +521,7 @@ const CakeConfigurator = ({ onAdd }: CakeConfiguratorProps) => {
 
         <Button type="button" onClick={handleAdd} disabled={!canSubmit} className="w-full">
           <ShoppingBasket className="h-4 w-4" aria-hidden="true" />
-          {justAdded ? 'Pridané — pokračujte v dopyte' : 'Pridať tortu do dopytu'}
+          {justAdded ? 'Uložené — pokračujte v dopyte' : submitLabel ?? 'Pridať tortu do dopytu'}
         </Button>
 
         {config.notes.length > 0 && (

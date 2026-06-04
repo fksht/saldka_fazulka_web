@@ -141,8 +141,10 @@ export interface CakeConfiguration {
   sizePriceFrom: number;
   /** Chosen fillings ("Doplnky vnútri torty"). */
   fillingNames?: string[];
+  fillingIds?: string[];
   /** Special/dietary versions (vegánska, bezlepková, bezlaktózová…). Also mirrored to `extras`. */
   dietaryNames?: string[];
+  dietaryIds?: string[];
   /** Computed total (size base + all surcharges). Null = price by agreement. */
   totalPrice?: number | null;
   priceType?: PriceType;

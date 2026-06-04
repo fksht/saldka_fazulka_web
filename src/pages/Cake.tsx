@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import CakeConfigurator from '../components/cake/CakeConfigurator';
 import GoldDivider from '../components/ui/GoldDivider';
 import Toast from '../components/ui/Toast';
@@ -11,10 +11,21 @@ import { SECTION_IMAGES } from '../data/sladkaFazulkaCatalog';
 const Cake = () => {
   useSeo('/torty-na-mieru');
   const navigate = useNavigate();
-  const { addCustomCake } = useCart();
+  const { addCustomCake, updateCustomCake, items } = useCart();
+  const [searchParams] = useSearchParams();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  const editId = searchParams.get('edit');
+  const editingItem = editId
+    ? items.find((item) => item.productId === editId && item.kind === 'custom-cake')
+    : undefined;
+
   const handleAdd = (config: CakeConfiguration) => {
+    if (editingItem) {
+      updateCustomCake(editingItem.productId, config);
+      navigate('/objednavka');
+      return;
+    }
     addCustomCake(config);
     setToastMessage(`Torta na mieru (${config.sizeName}) je pridaná do dopytu.`);
   };
@@ -50,7 +61,11 @@ const Cake = () => {
 
       <section className="py-14 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <CakeConfigurator onAdd={handleAdd} />
+          <CakeConfigurator
+            onAdd={handleAdd}
+            initialConfig={editingItem?.cakeConfiguration ?? null}
+            submitLabel={editingItem ? 'Uložiť zmeny torty' : undefined}
+          />
         </div>
       </section>
 

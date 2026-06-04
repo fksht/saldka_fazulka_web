@@ -98,9 +98,13 @@ const cakeDescription = (cfg?: CakeConfiguration) => {
 };
 
 const itemImage = (it: OrderItem) => {
-  const img = absImageUrl(it.imageUrl);
-  if (img) return img;
-  return it.kind === 'custom-cake' ? DEFAULT_CAKE_IMAGE : '';
+  // A real absolute image always wins.
+  if (it.imageUrl && it.imageUrl.startsWith('http')) return it.imageUrl;
+  // Custom cakes use the known-good default (same base as the logo) — their own
+  // image is usually a base64 inspiration preview or a relative path that may not
+  // resolve from SITE_ORIGIN.
+  if (it.kind === 'custom-cake') return DEFAULT_CAKE_IMAGE;
+  return absImageUrl(it.imageUrl);
 };
 
 const lineTotalText = (it: OrderItem) => {
@@ -204,7 +208,7 @@ Deno.serve(async (req) => {
         <tfoot>
           <tr>
             <td colspan="2" style="padding:12px 0 0;font-weight:bold">${esc(totalLabel)}</td>
-            <td style="padding:12px 0 0;font-weight:bold;text-align:right">${esc(totalValue)}</td>
+            <td style="padding:12px 0 0;font-weight:bold;text-align:right;white-space:nowrap">${esc(totalValue)}</td>
           </tr>
         </tfoot>
       </table>

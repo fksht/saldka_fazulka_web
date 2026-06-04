@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Calendar, Loader2, Mail, Package, Phone, RefreshCw, Trash2, User } from 'lucide-react';
+import { Calendar, Filter, Loader2, Mail, Package, Phone, RefreshCw, Trash2, User } from 'lucide-react';
 import { dataService } from '../../services/dataService';
 import { Order, OrderStatus } from '../../types';
 import { formatDate } from '../../utils/format';
@@ -32,6 +32,9 @@ const OrderDashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
+
+  const visibleOrders = statusFilter === 'all' ? orders : orders.filter((order) => order.status === statusFilter);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -80,10 +83,28 @@ const OrderDashboard = () => {
           <h2 className="font-serif text-3xl font-bold text-cocoa-950">Objednávky</h2>
           <p className="mt-1 text-sm text-cocoa-500">Prehľad dopytov od zákazníkov a ich stavov.</p>
         </div>
-        <Button type="button" variant="secondary" onClick={fetchOrders}>
-          <RefreshCw className="h-4 w-4" aria-hidden="true" />
-          Obnoviť
-        </Button>
+        <div className="flex items-center gap-2">
+          <label className="relative">
+            <span className="sr-only">Filtrovať podľa stavu</span>
+            <select
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value as OrderStatus | 'all')}
+              className="h-11 rounded-full border border-cream-200 bg-white pl-4 pr-9 text-sm font-semibold text-cocoa-700 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
+            >
+              <option value="all">Všetky stavy</option>
+              {(Object.entries(statusLabels) as Array<[OrderStatus, string]>).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+            <Filter className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-cocoa-400" aria-hidden="true" />
+          </label>
+          <Button type="button" variant="secondary" onClick={fetchOrders}>
+            <RefreshCw className="h-4 w-4" aria-hidden="true" />
+            Obnoviť
+          </Button>
+        </div>
       </div>
 
       {loading ? (
@@ -95,9 +116,16 @@ const OrderDashboard = () => {
           <Package className="mx-auto mb-4 h-12 w-12 text-cream-400" aria-hidden="true" />
           <p className="font-semibold text-cocoa-700">Zatiaľ nie sú žiadne objednávky.</p>
         </div>
+      ) : visibleOrders.length === 0 ? (
+        <div className="rounded-lg border border-dashed border-cream-400 bg-white p-12 text-center">
+          <Filter className="mx-auto mb-4 h-12 w-12 text-cream-400" aria-hidden="true" />
+          <p className="font-semibold text-cocoa-700">
+            Žiadne objednávky v stave „{statusFilter !== 'all' ? statusLabels[statusFilter] : ''}“.
+          </p>
+        </div>
       ) : (
         <div className="grid gap-4">
-          {orders.map((order) => {
+          {visibleOrders.map((order) => {
             const items = order.items ?? [];
             const pricing = getOrderPricingSummary(items);
 
