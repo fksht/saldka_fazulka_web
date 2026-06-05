@@ -99,7 +99,9 @@ const Contact = () => {
             <GoldDivider align="left" />
           </div>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-cocoa-700">
-            Do poznámky napíšte dátum a typ udalosti, počet hostí alebo porcií, obľúbené príchute, alergie a predstavu dekoru. Pri tortách môžete priložiť aj odkaz na inšpiráciu.
+            V ponuke si vyberte zákusky alebo si poskladajte tortu na mieru a pridajte ich do košíka. Vo formulári potom
+            vyplníte dátum udalosti či vyzdvihnutia, spôsob prevzatia a typ udalosti. Do poznámky doplňte alergie, obľúbené
+            príchute a predstavu dekoru — pri tortách môžete priložiť aj odkaz na inšpiráciu.
           </p>
           <ButtonLink to="/objednavka" className="mt-8">
             Poslať nezáväznú objednávku
